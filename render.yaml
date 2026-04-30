@@ -4,8 +4,8 @@ services:
     runtime: node
     plan: free
     region: singapore
-    buildCommand: npm ci
-    startCommand: npm start
+    buildCommand: corepack enable && yarn install --immutable && yarn migrate
+    startCommand: yarn start
     healthCheckPath: /health
     autoDeploy: true
     envVars:
