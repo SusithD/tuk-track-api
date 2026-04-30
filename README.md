@@ -24,25 +24,32 @@ RESTful API for real-time three-wheeler (tuk-tuk) tracking and movement logging 
 - Swagger UI / OpenAPI 3.0
 - Jest + Supertest
 
+## Prerequisites
+
+- Node.js 20+
+- [Corepack](https://nodejs.org/api/corepack.html) enabled (`corepack enable`) — pins Yarn 4 via the `packageManager` field in `package.json`
+- Docker (optional, for the bundled local Postgres)
+
 ## Quick start
 
 ```bash
+corepack enable                # one-time, activates yarn 4 from packageManager pin
 cp .env.example .env
-npm install
+yarn install
 
 # spin up local Postgres (or point DATABASE_URL at your own)
 docker compose up -d
 
-npm run migrate
-npm run seed
-npm run dev
+yarn migrate
+yarn seed
+yarn dev
 ```
 
 Open <http://localhost:3000/docs> for the API explorer.
 
 ### Seeded test data
 
-`npm run seed` provisions a deterministic dataset:
+`yarn seed` provisions a deterministic dataset:
 
 - 9 provinces, 25 districts, 25 police stations (real Sri Lanka geography)
 - 8 user accounts (1 HQ, 2 province, 5 station) — login with any email + password `Password123!`
@@ -53,17 +60,17 @@ Override with env vars: `SEED_VEHICLE_COUNT`, `SEED_HISTORY_DAYS`, `SEED_PING_IN
 
 ## Scripts
 
-| Command            | Purpose                                                                           |
-| ------------------ | --------------------------------------------------------------------------------- |
-| `npm run dev`      | Start with auto-reload (nodemon)                                                  |
-| `npm start`        | Start in production mode                                                          |
-| `npm run lint`     | ESLint check                                                                      |
-| `npm run lint:fix` | ESLint with autofix                                                               |
-| `npm run format`   | Prettier write                                                                    |
-| `npm test`         | Run Jest test suite                                                               |
-| `npm run migrate`  | Apply DB migrations                                                               |
-| `npm run seed`     | Seed simulation data (provinces, districts, stations, vehicles, location history) |
-| `npm run db:reset` | Drop, migrate, seed                                                               |
+| Command         | Purpose                                                                           |
+| --------------- | --------------------------------------------------------------------------------- |
+| `yarn dev`      | Start with auto-reload (nodemon)                                                  |
+| `yarn start`    | Start in production mode                                                          |
+| `yarn lint`     | ESLint check                                                                      |
+| `yarn lint:fix` | ESLint with autofix                                                               |
+| `yarn format`   | Prettier write                                                                    |
+| `yarn test`     | Run Jest test suite                                                               |
+| `yarn migrate`  | Apply DB migrations                                                               |
+| `yarn seed`     | Seed simulation data (provinces, districts, stations, vehicles, location history) |
+| `yarn db:reset` | Drop, migrate, seed                                                               |
 
 ## Project layout
 
