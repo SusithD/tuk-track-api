@@ -1,0 +1,156 @@
+/**
+ * Real Sri Lankan administrative master data: 9 provinces, 25 districts,
+ * plus a curated set of 25 police stations distributed across districts.
+ * Centroid coordinates per district drive the simulated GPS ping geometry.
+ */
+
+export const provinces = [
+  { code: 'WP', name: 'Western Province' },
+  { code: 'CP', name: 'Central Province' },
+  { code: 'SP', name: 'Southern Province' },
+  { code: 'NP', name: 'Northern Province' },
+  { code: 'EP', name: 'Eastern Province' },
+  { code: 'NWP', name: 'North Western Province' },
+  { code: 'NCP', name: 'North Central Province' },
+  { code: 'UVA', name: 'Uva Province' },
+  { code: 'SAB', name: 'Sabaragamuwa Province' },
+];
+
+export const districts = [
+  { code: 'COL', name: 'Colombo', province: 'WP', lat: 6.9271, lng: 79.8612 },
+  { code: 'GAM', name: 'Gampaha', province: 'WP', lat: 7.0917, lng: 79.999 },
+  { code: 'KAL', name: 'Kalutara', province: 'WP', lat: 6.5854, lng: 79.9607 },
+  { code: 'KAN', name: 'Kandy', province: 'CP', lat: 7.2906, lng: 80.6337 },
+  { code: 'MAT', name: 'Matale', province: 'CP', lat: 7.4675, lng: 80.6234 },
+  { code: 'NEL', name: 'Nuwara Eliya', province: 'CP', lat: 6.9497, lng: 80.7891 },
+  { code: 'GAL', name: 'Galle', province: 'SP', lat: 6.0535, lng: 80.221 },
+  { code: 'MTR', name: 'Matara', province: 'SP', lat: 5.9485, lng: 80.5353 },
+  { code: 'HAM', name: 'Hambantota', province: 'SP', lat: 6.1241, lng: 81.1185 },
+  { code: 'JAF', name: 'Jaffna', province: 'NP', lat: 9.6615, lng: 80.0255 },
+  { code: 'KIL', name: 'Kilinochchi', province: 'NP', lat: 9.3961, lng: 80.4036 },
+  { code: 'MAN', name: 'Mannar', province: 'NP', lat: 8.981, lng: 79.9044 },
+  { code: 'VAV', name: 'Vavuniya', province: 'NP', lat: 8.7514, lng: 80.4971 },
+  { code: 'MUL', name: 'Mullaitivu', province: 'NP', lat: 9.2671, lng: 80.8128 },
+  { code: 'TRI', name: 'Trincomalee', province: 'EP', lat: 8.5874, lng: 81.2152 },
+  { code: 'BAT', name: 'Batticaloa', province: 'EP', lat: 7.7172, lng: 81.7 },
+  { code: 'AMP', name: 'Ampara', province: 'EP', lat: 7.2974, lng: 81.68 },
+  { code: 'KUR', name: 'Kurunegala', province: 'NWP', lat: 7.4863, lng: 80.3647 },
+  { code: 'PUT', name: 'Puttalam', province: 'NWP', lat: 8.0408, lng: 79.8264 },
+  { code: 'ANU', name: 'Anuradhapura', province: 'NCP', lat: 8.3114, lng: 80.4037 },
+  { code: 'POL', name: 'Polonnaruwa', province: 'NCP', lat: 7.9403, lng: 81.0188 },
+  { code: 'BAD', name: 'Badulla', province: 'UVA', lat: 6.9934, lng: 81.055 },
+  { code: 'MON', name: 'Monaragala', province: 'UVA', lat: 6.8714, lng: 81.3507 },
+  { code: 'RAT', name: 'Ratnapura', province: 'SAB', lat: 6.6828, lng: 80.4034 },
+  { code: 'KEG', name: 'Kegalle', province: 'SAB', lat: 7.2513, lng: 80.3464 },
+];
+
+/**
+ * Stations: a realistic sample of police stations across the country.
+ * Coordinates are nudged slightly off the district centroid so each station
+ * has its own "neighbourhood" for ping simulation.
+ */
+export const stations = [
+  {
+    code: 'COL-CENTRAL',
+    name: 'Colombo Central Police',
+    district: 'COL',
+    latOffset: 0.001,
+    lngOffset: -0.002,
+  },
+  {
+    code: 'COL-PETTAH',
+    name: 'Pettah Police',
+    district: 'COL',
+    latOffset: -0.005,
+    lngOffset: 0.004,
+  },
+  {
+    code: 'COL-DEHIWALA',
+    name: 'Dehiwala Police',
+    district: 'COL',
+    latOffset: -0.05,
+    lngOffset: 0.0,
+  },
+  {
+    code: 'COL-MTLAVINIA',
+    name: 'Mount Lavinia Police',
+    district: 'COL',
+    latOffset: -0.07,
+    lngOffset: 0.005,
+  },
+  { code: 'GAM-MAIN', name: 'Gampaha Police', district: 'GAM', latOffset: 0.0, lngOffset: 0.0 },
+  {
+    code: 'GAM-NEGOMBO',
+    name: 'Negombo Police',
+    district: 'GAM',
+    latOffset: 0.12,
+    lngOffset: -0.18,
+  },
+  { code: 'KAL-MAIN', name: 'Kalutara Police', district: 'KAL', latOffset: 0.0, lngOffset: 0.0 },
+  { code: 'KAN-MAIN', name: 'Kandy Police', district: 'KAN', latOffset: 0.0, lngOffset: 0.0 },
+  {
+    code: 'KAN-PERADENIYA',
+    name: 'Peradeniya Police',
+    district: 'KAN',
+    latOffset: -0.02,
+    lngOffset: -0.04,
+  },
+  { code: 'MAT-MAIN', name: 'Matale Police', district: 'MAT', latOffset: 0.0, lngOffset: 0.0 },
+  {
+    code: 'NEL-MAIN',
+    name: 'Nuwara Eliya Police',
+    district: 'NEL',
+    latOffset: 0.0,
+    lngOffset: 0.0,
+  },
+  { code: 'GAL-FORT', name: 'Galle Fort Police', district: 'GAL', latOffset: 0.0, lngOffset: 0.0 },
+  { code: 'MTR-MAIN', name: 'Matara Police', district: 'MTR', latOffset: 0.0, lngOffset: 0.0 },
+  { code: 'HAM-MAIN', name: 'Hambantota Police', district: 'HAM', latOffset: 0.0, lngOffset: 0.0 },
+  { code: 'JAF-MAIN', name: 'Jaffna Police', district: 'JAF', latOffset: 0.0, lngOffset: 0.0 },
+  { code: 'TRI-MAIN', name: 'Trincomalee Police', district: 'TRI', latOffset: 0.0, lngOffset: 0.0 },
+  { code: 'BAT-MAIN', name: 'Batticaloa Police', district: 'BAT', latOffset: 0.0, lngOffset: 0.0 },
+  { code: 'AMP-MAIN', name: 'Ampara Police', district: 'AMP', latOffset: 0.0, lngOffset: 0.0 },
+  { code: 'KUR-MAIN', name: 'Kurunegala Police', district: 'KUR', latOffset: 0.0, lngOffset: 0.0 },
+  {
+    code: 'PUT-CHILAW',
+    name: 'Chilaw Police',
+    district: 'PUT',
+    latOffset: -0.45,
+    lngOffset: -0.15,
+  },
+  {
+    code: 'ANU-MAIN',
+    name: 'Anuradhapura Police',
+    district: 'ANU',
+    latOffset: 0.0,
+    lngOffset: 0.0,
+  },
+  { code: 'POL-MAIN', name: 'Polonnaruwa Police', district: 'POL', latOffset: 0.0, lngOffset: 0.0 },
+  { code: 'BAD-MAIN', name: 'Badulla Police', district: 'BAD', latOffset: 0.0, lngOffset: 0.0 },
+  { code: 'RAT-MAIN', name: 'Ratnapura Police', district: 'RAT', latOffset: 0.0, lngOffset: 0.0 },
+  { code: 'KEG-MAIN', name: 'Kegalle Police', district: 'KEG', latOffset: 0.0, lngOffset: 0.0 },
+];
+
+/** Sri Lanka registration plate prefixes (newer 3-letter format). */
+export const platePrefixes = [
+  'ABC',
+  'ABF',
+  'ACE',
+  'ACG',
+  'ADM',
+  'AFP',
+  'AHQ',
+  'AJK',
+  'AKL',
+  'ALW',
+  'AMP',
+  'ANR',
+  'APP',
+  'AQB',
+  'ASD',
+  'ATR',
+  'AVB',
+  'AWP',
+  'AXC',
+  'AYR',
+];
