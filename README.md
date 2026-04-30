@@ -29,10 +29,27 @@ RESTful API for real-time three-wheeler (tuk-tuk) tracking and movement logging 
 ```bash
 cp .env.example .env
 npm install
+
+# spin up local Postgres (or point DATABASE_URL at your own)
+docker compose up -d
+
+npm run migrate
+npm run seed
 npm run dev
 ```
 
 Open <http://localhost:3000/docs> for the API explorer.
+
+### Seeded test data
+
+`npm run seed` provisions a deterministic dataset:
+
+- 9 provinces, 25 districts, 25 police stations (real Sri Lanka geography)
+- 8 user accounts (1 HQ, 2 province, 5 station) — login with any email + password `Password123!`
+- 200 registered tuk-tuks (~95% active) with provisioned tracking devices
+- 7 days of GPS pings at 10-minute intervals (~190k rows)
+
+Override with env vars: `SEED_VEHICLE_COUNT`, `SEED_HISTORY_DAYS`, `SEED_PING_INTERVAL_MIN`.
 
 ## Scripts
 
