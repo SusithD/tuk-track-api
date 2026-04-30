@@ -11,6 +11,7 @@ import { logger } from './utils/logger.js';
 import { requestId } from './middleware/requestId.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 import { swaggerSpec } from './docs/swagger.js';
+import authRoutes from './modules/auth/auth.routes.js';
 
 export function createApp() {
   const app = express();
@@ -22,7 +23,16 @@ export function createApp() {
   app.use(helmet());
   app.use(cors({ origin: env.CORS_ORIGIN === '*' ? true : env.CORS_ORIGIN.split(',') }));
   app.use(compression());
-  app.use(express.json({ limit: '256kb' }));
+  app.use(
+    express.json({
+      limit: '256kb',
+      // Capture the raw request body so HMAC verification (device auth)
+      // can hash exactly the bytes the client signed.
+      verify: (req, _res, buf) => {
+        req.rawBody = buf.toString('utf8');
+      },
+    }),
+  );
   app.use(pinoHttp({ logger, customProps: (req) => ({ requestId: req.id }) }));
 
   app.use(
@@ -58,6 +68,8 @@ export function createApp() {
 
   app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec, { explorer: true }));
   app.get('/openapi.json', (_req, res) => res.json(swaggerSpec));
+
+  app.use('/api/v1/auth', authRoutes);
 
   app.use(notFound);
   app.use(errorHandler);
