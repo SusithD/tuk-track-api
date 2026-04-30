@@ -1,10 +1,25 @@
 node_modules/
 coverage/
 dist/
+
+# Env
 .env
 .env.local
 .env.*.local
+
+# Logs
 *.log
+
+# OS / editor
 .DS_Store
 .vscode/
 .idea/
+
+# Yarn 4 (node-modules linker; we do NOT use zero-installs)
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/sdks
+!.yarn/versions
+.pnp.*
