@@ -1,5 +1,10 @@
 import request from 'supertest';
 import { createApp } from '../../src/app.js';
+import { db } from '../setup/db.js';
+
+afterAll(async () => {
+  await db.destroy();
+});
 
 describe('GET /health', () => {
   const app = createApp();
