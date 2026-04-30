@@ -13,23 +13,26 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
+      - name: Enable corepack (yarn)
+        run: corepack enable
+
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: '20'
-          cache: 'npm'
+          cache: 'yarn'
 
       - name: Install dependencies
-        run: npm ci
+        run: yarn install --immutable
 
       - name: Lint
-        run: npm run lint
+        run: yarn lint
 
       - name: Format check
-        run: npm run format:check
+        run: yarn format:check
 
       - name: Test
-        run: npm test
+        run: yarn test
         env:
           NODE_ENV: test
           JWT_SECRET: test-secret-only-for-ci-do-not-use-in-prod-32chars
