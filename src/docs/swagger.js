@@ -170,6 +170,38 @@ export const swaggerSpec = swaggerJSDoc({
           },
         },
 
+        // ----- Drivers (virtual resource over vehicles) -----
+        Driver: {
+          type: 'object',
+          properties: {
+            nic: { type: 'string', example: '882233456V' },
+            name: { type: 'string' },
+            phone: { type: 'string', nullable: true },
+            vehicle_count: { type: 'integer', example: 1 },
+          },
+        },
+        DriverDetail: {
+          type: 'object',
+          properties: {
+            nic: { type: 'string', example: '882233456V' },
+            name: { type: 'string' },
+            phone: { type: 'string', nullable: true },
+            vehicle_count: { type: 'integer', example: 2 },
+            vehicles: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  id: { type: 'string', format: 'uuid' },
+                  plate_no: { type: 'string' },
+                  status: { type: 'string', enum: ['active', 'inactive', 'impounded'] },
+                  station_id: { type: 'string', format: 'uuid' },
+                },
+              },
+            },
+          },
+        },
+
         // ----- Devices (admin metadata) -----
         Device: {
           type: 'object',
@@ -270,6 +302,10 @@ export const swaggerSpec = swaggerJSDoc({
         description: 'Provinces, districts, stations (administrative reference data)',
       },
       { name: 'Vehicles', description: 'Tuk-tuk fleet CRUD with role-scoped reads and writes' },
+      {
+        name: 'Drivers',
+        description: 'Registered tuk-tuk drivers (virtual resource over vehicles, scope-aware)',
+      },
       {
         name: 'Locations',
         description: 'Live position, time-window history, cross-fleet ops view',
