@@ -12,12 +12,16 @@ import { requestId } from './middleware/requestId.js';
 import { notFound, errorHandler } from './middleware/errorHandler.js';
 import { swaggerSpec } from './docs/swagger.js';
 import authRoutes from './modules/auth/auth.routes.js';
+import masterRoutes from './modules/master/master.routes.js';
+import vehicleRoutes from './modules/vehicles/vehicles.routes.js';
 
 export function createApp() {
   const app = express();
 
   app.disable('x-powered-by');
   app.set('trust proxy', 1);
+  // Strong ETags so conditional GETs (If-None-Match) yield byte-accurate 304s.
+  app.set('etag', 'strong');
 
   app.use(requestId);
   app.use(helmet());
@@ -70,6 +74,8 @@ export function createApp() {
   app.get('/openapi.json', (_req, res) => res.json(swaggerSpec));
 
   app.use('/api/v1/auth', authRoutes);
+  app.use('/api/v1', masterRoutes);
+  app.use('/api/v1/vehicles', vehicleRoutes);
 
   app.use(notFound);
   app.use(errorHandler);

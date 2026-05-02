@@ -28,18 +28,20 @@ export async function makeUser({ role = 'hq', password = 'Password123!', ...over
   const email = overrides.email || `${role}.${crypto.randomBytes(4).toString('hex')}@test.local`;
   const password_hash = await bcrypt.hash(password, 6);
 
-  const place =
-    role === 'hq'
-      ? { province_id: null, station_id: null }
-      : role === 'province'
-        ? {
-            province_id: overrides.province_id || (await makePlace()).province_id,
-            station_id: null,
-          }
-        : await (async () => {
-            const p = await makePlace();
-            return { province_id: p.province_id, station_id: p.station_id };
-          })();
+  let place;
+  if (role === 'hq') {
+    place = { province_id: null, station_id: null };
+  } else if (role === 'province') {
+    const province_id = overrides.province_id || (await makePlace()).province_id;
+    place = { province_id, station_id: null };
+  } else {
+    if (overrides.station_id && overrides.province_id) {
+      place = { province_id: overrides.province_id, station_id: overrides.station_id };
+    } else {
+      const p = await makePlace();
+      place = { province_id: p.province_id, station_id: p.station_id };
+    }
+  }
 
   const [user] = await db('users')
     .insert({
@@ -53,6 +55,40 @@ export async function makeUser({ role = 'hq', password = 'Password123!', ...over
     .returning(['id', 'email', 'role', 'province_id', 'station_id', 'status']);
 
   return { ...user, password };
+}
+
+/** Inserts an extra district within an existing province. */
+export async function makeDistrictInProvince(province_id, overrides = {}) {
+  const code = overrides.code || `D${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
+  const [row] = await db('districts')
+    .insert({ province_id, code, name: overrides.name || `Test ${code}` })
+    .returning(['id', 'province_id', 'code', 'name']);
+  return row;
+}
+
+/** Inserts an extra station within an existing district. */
+export async function makeStationInDistrict(district_id, overrides = {}) {
+  const code = overrides.code || `S-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
+  const [row] = await db('stations')
+    .insert({ district_id, code, name: overrides.name || `Test ${code}` })
+    .returning(['id', 'district_id', 'code', 'name']);
+  return row;
+}
+
+/** Inserts a vehicle without a device. Useful for vehicle-CRUD tests. */
+export async function makeVehicle({ station_id, ...overrides } = {}) {
+  if (!station_id) ({ station_id } = await makePlace());
+  const [row] = await db('vehicles')
+    .insert({
+      plate_no: overrides.plate_no || `TST-${crypto.randomBytes(2).toString('hex').toUpperCase()}`,
+      owner_name: overrides.owner_name || 'Test Owner',
+      owner_nic: overrides.owner_nic,
+      owner_phone: overrides.owner_phone,
+      station_id,
+      status: overrides.status || 'active',
+    })
+    .returning('*');
+  return row;
 }
 
 export async function makeVehicleWithDevice({ station_id } = {}) {
