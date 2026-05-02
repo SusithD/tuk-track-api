@@ -2,6 +2,7 @@ import { Router } from 'express';
 import { requireUser, requireRole } from '../../middleware/auth.js';
 import { privateNoStore } from '../../utils/cache-headers.js';
 import * as ctrl from './vehicles.controller.js';
+import { vehicleSubRoutes } from '../tracking/tracking.routes.js';
 
 const router = Router();
 
@@ -14,5 +15,8 @@ router.get('/:id', ctrl.getById);
 // Province admins are intentionally read-only — they oversee, not register.
 router.post('/', requireRole('hq', 'station'), ctrl.create);
 router.patch('/:id', requireRole('hq', 'station'), ctrl.update);
+
+// Mount /vehicles/:id/location and /vehicles/:id/history from the tracking module.
+router.use('/', vehicleSubRoutes);
 
 export default router;

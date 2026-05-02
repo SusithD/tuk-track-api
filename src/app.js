@@ -14,6 +14,7 @@ import { swaggerSpec } from './docs/swagger.js';
 import authRoutes from './modules/auth/auth.routes.js';
 import masterRoutes from './modules/master/master.routes.js';
 import vehicleRoutes from './modules/vehicles/vehicles.routes.js';
+import { deviceRouter, userRouter } from './modules/tracking/tracking.routes.js';
 
 export function createApp() {
   const app = express();
@@ -76,6 +77,8 @@ export function createApp() {
   app.use('/api/v1/auth', authRoutes);
   app.use('/api/v1', masterRoutes);
   app.use('/api/v1/vehicles', vehicleRoutes);
+  app.use('/api/v1/devices', deviceRouter);
+  app.use('/api/v1', userRouter);
 
   app.use(notFound);
   app.use(errorHandler);
