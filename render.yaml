@@ -4,7 +4,10 @@ services:
     runtime: node
     plan: free
     region: singapore
-    buildCommand: corepack enable && yarn install --immutable && yarn migrate && yarn seed
+    # Render's Node runtime auto-activates corepack from package.json's
+    # `packageManager` field, so an explicit `corepack enable` is unnecessary
+    # AND fails because /usr/bin is read-only on the build host.
+    buildCommand: yarn install --immutable && yarn migrate && yarn seed
     startCommand: yarn start
     healthCheckPath: /health
     autoDeploy: true
