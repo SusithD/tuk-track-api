@@ -4,11 +4,13 @@ services:
     runtime: node
     plan: free
     region: singapore
-    # Render's Node runtime auto-activates corepack from package.json's
-    # `packageManager` field, so an explicit `corepack enable` is unnecessary
-    # AND fails because /usr/bin is read-only on the build host.
-    buildCommand: yarn install --immutable && yarn migrate && yarn seed
-    startCommand: yarn start
+    # Render's global yarn is v1; package.json pins yarn 4 via the
+    # `packageManager` field. We can't run `corepack enable` (it tries to
+    # write shims to /usr/bin, which is read-only on the build host), so
+    # we invoke yarn through corepack directly — corepack resolves the
+    # right version per call.
+    buildCommand: corepack yarn install --immutable && corepack yarn migrate && corepack yarn seed
+    startCommand: corepack yarn start
     healthCheckPath: /health
     autoDeploy: true
     envVars:
