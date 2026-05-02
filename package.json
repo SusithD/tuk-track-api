@@ -20,7 +20,8 @@
     "migrate": "knex migrate:latest",
     "migrate:rollback": "knex migrate:rollback",
     "seed": "knex seed:run",
-    "db:reset": "knex migrate:rollback --all && knex migrate:latest && knex seed:run"
+    "seed:force": "SEED_FORCE=1 knex seed:run",
+    "db:reset": "knex migrate:rollback --all && knex migrate:latest && SEED_FORCE=1 knex seed:run"
   },
   "dependencies": {
     "@faker-js/faker": "^10.4.0",

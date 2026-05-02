@@ -4,6 +4,7 @@ import { districts as DISTRICTS, stations as STATIONS } from './data/sri-lanka.j
 const HISTORY_DAYS = Number(process.env.SEED_HISTORY_DAYS || 7);
 const PING_INTERVAL_MIN = Number(process.env.SEED_PING_INTERVAL_MIN || 10);
 const RNG_SEED = Number(process.env.SEED_RNG || 20260430);
+const FORCE = process.env.SEED_FORCE === '1';
 
 /**
  * Generates HISTORY_DAYS of GPS pings for every active device.
@@ -14,6 +15,13 @@ const RNG_SEED = Number(process.env.SEED_RNG || 20260430);
  * stale-device alerting path.
  */
 export async function seed(knex) {
+  const existing = await knex('locations').count({ c: 'id' }).first();
+  if (Number(existing.c) > 0 && !FORCE) {
+    // eslint-disable-next-line no-console
+    console.log('  ⊙ location pings already present, skipping');
+    return;
+  }
+
   const rng = mulberry32(RNG_SEED);
 
   const districtByCode = Object.fromEntries(DISTRICTS.map((d) => [d.code, d]));

@@ -6,6 +6,7 @@ import { platePrefixes } from './data/sri-lanka.js';
 
 const VEHICLE_COUNT = Number(process.env.SEED_VEHICLE_COUNT || 200);
 const RNG_SEED = Number(process.env.SEED_RNG || 20260430);
+const FORCE = process.env.SEED_FORCE === '1';
 
 /**
  * Generates `VEHICLE_COUNT` vehicles distributed across all stations,
@@ -14,6 +15,13 @@ const RNG_SEED = Number(process.env.SEED_RNG || 20260430);
  * same fleet (useful for demos and viva consistency).
  */
 export async function seed(knex) {
+  const existing = await knex('vehicles').count({ c: 'id' }).first();
+  if (Number(existing.c) > 0 && !FORCE) {
+    // eslint-disable-next-line no-console
+    console.log('  ⊙ vehicles already present, skipping');
+    return;
+  }
+
   const rng = mulberry32(RNG_SEED);
   faker.seed(RNG_SEED);
 
