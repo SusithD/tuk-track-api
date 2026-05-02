@@ -1,4 +1,5 @@
 import swaggerJSDoc from 'swagger-jsdoc';
+import { publicUrl, isProd } from '../config/env.js';
 
 export const swaggerSpec = swaggerJSDoc({
   definition: {
@@ -11,10 +12,7 @@ export const swaggerSpec = swaggerJSDoc({
       contact: { name: 'NB6007CEM Coursework' },
       license: { name: 'Academic use only' },
     },
-    servers: [
-      { url: 'http://localhost:3000', description: 'Local' },
-      { url: 'https://example.onrender.com', description: 'Production (replace with deploy URL)' },
-    ],
+    servers: [{ url: publicUrl, description: isProd ? 'Production' : 'Local' }],
     components: {
       securitySchemes: {
         bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },
