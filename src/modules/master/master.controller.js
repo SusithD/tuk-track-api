@@ -13,7 +13,17 @@ const uuid = z.string().uuid();
  *     summary: List all provinces
  *     description: Cacheable for 5 minutes. Honors If-None-Match (ETag) and If-Modified-Since.
  *     responses:
- *       200: { description: Array of provinces }
+ *       200:
+ *         description: Array of provinces
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/Province' }
+ *                 meta: { type: object, properties: { count: { type: integer } } }
  *       304: { description: Not modified }
  */
 export async function listProvinces(req, res, next) {
@@ -65,7 +75,16 @@ export async function getProvince(req, res, next) {
  *         schema: { type: string, example: WP }
  *         description: Filter by province code (e.g. WP, CP, NP)
  *     responses:
- *       200: { description: Array of districts }
+ *       200:
+ *         description: Array of districts
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/District' }
  */
 export async function listDistricts(req, res, next) {
   try {
@@ -109,7 +128,16 @@ export async function getDistrict(req, res, next) {
  *         schema: { type: string }
  *         description: Filter by province code
  *     responses:
- *       200: { description: Array of stations }
+ *       200:
+ *         description: Array of stations
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/Station' }
  */
 export async function listStations(req, res, next) {
   try {

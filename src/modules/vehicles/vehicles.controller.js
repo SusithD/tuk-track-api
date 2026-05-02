@@ -61,10 +61,21 @@ const uuid = z.string().uuid();
  *         name: limit
  *         schema: { type: integer, default: 50, maximum: 200 }
  *     responses:
- *       200: { description: Page of vehicles + pagination metadata }
- *       304: { description: Not modified }
- *       400: { description: Bad query (e.g. unsortable column) }
- *       401: { description: Auth required }
+ *       200:
+ *         description: Page of vehicles + pagination metadata
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/Vehicle' }
+ *                 meta:  { $ref: '#/components/schemas/PaginationMeta' }
+ *                 links: { $ref: '#/components/schemas/PaginationLinks' }
+ *       304: { description: Not modified (If-None-Match matched) }
+ *       400: { description: Bad query (unsortable column or unknown field) }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
  */
 export async function list(req, res, next) {
   try {
@@ -121,9 +132,16 @@ export async function list(req, res, next) {
  *         required: true
  *         schema: { type: string, format: uuid }
  *     responses:
- *       200: { description: Vehicle }
- *       304: { description: Not modified }
- *       404: { description: Not found OR outside your scope }
+ *       200:
+ *         description: Vehicle
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data: { $ref: '#/components/schemas/Vehicle' }
+ *       304: { description: Not modified (If-None-Match matched) }
+ *       404: { $ref: '#/components/responses/NotFound' }
  */
 export async function getById(req, res, next) {
   try {
@@ -150,20 +168,22 @@ export async function getById(req, res, next) {
  *       required: true
  *       content:
  *         application/json:
- *           schema:
- *             type: object
- *             required: [plate_no, owner_name, station_id]
- *             properties:
- *               plate_no:    { type: string, example: ABC-1234 }
- *               owner_name:  { type: string }
- *               owner_nic:   { type: string }
- *               owner_phone: { type: string }
- *               station_id:  { type: string, format: uuid }
- *               status:      { type: string, enum: [active, inactive, impounded] }
+ *           schema: { $ref: '#/components/schemas/VehicleCreate' }
  *     responses:
- *       201: { description: Created — Location header points at new resource }
+ *       201:
+ *         description: Created — Location header points at new resource
+ *         headers:
+ *           Location:
+ *             description: URL of the newly created vehicle
+ *             schema: { type: string, format: uri }
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data: { $ref: '#/components/schemas/Vehicle' }
  *       409: { description: Plate already registered }
- *       422: { description: Validation error or unknown station_id }
+ *       422: { $ref: '#/components/responses/ValidationError' }
  */
 export async function create(req, res, next) {
   try {
@@ -188,10 +208,22 @@ export async function create(req, res, next) {
  *         name: id
  *         required: true
  *         schema: { type: string, format: uuid }
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema: { $ref: '#/components/schemas/VehicleUpdate' }
  *     responses:
- *       200: { description: Updated vehicle }
- *       404: { description: Not found OR outside your scope }
- *       422: { description: Validation error }
+ *       200:
+ *         description: Updated vehicle
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data: { $ref: '#/components/schemas/Vehicle' }
+ *       404: { $ref: '#/components/responses/NotFound' }
+ *       422: { $ref: '#/components/responses/ValidationError' }
  */
 export async function update(req, res, next) {
   try {

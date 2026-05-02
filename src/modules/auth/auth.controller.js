@@ -19,10 +19,14 @@ import * as authService from './auth.service.js';
  *               email: { type: string, format: email }
  *               password: { type: string, format: password }
  *     responses:
- *       200: { description: Token pair issued }
- *       401: { description: Invalid credentials }
- *       403: { description: Account disabled }
- *       422: { description: Validation error }
+ *       200:
+ *         description: Token pair issued
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/TokenPair' }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
+ *       403: { $ref: '#/components/responses/Forbidden' }
+ *       422: { $ref: '#/components/responses/ValidationError' }
  */
 export async function login(req, res, next) {
   try {
@@ -56,8 +60,12 @@ export async function login(req, res, next) {
  *             properties:
  *               refreshToken: { type: string }
  *     responses:
- *       200: { description: New token pair issued }
- *       401: { description: Refresh token invalid, expired, or reused }
+ *       200:
+ *         description: New token pair issued
+ *         content:
+ *           application/json:
+ *             schema: { $ref: '#/components/schemas/TokenPair' }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
  */
 export async function refresh(req, res, next) {
   try {
@@ -110,8 +118,15 @@ export async function logout(req, res, next) {
  *     security:
  *       - bearerAuth: []
  *     responses:
- *       200: { description: Current user profile }
- *       401: { description: Bearer token missing or invalid }
+ *       200:
+ *         description: Current user profile
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 user: { $ref: '#/components/schemas/User' }
+ *       401: { $ref: '#/components/responses/Unauthorized' }
  */
 export async function me(req, res, next) {
   try {

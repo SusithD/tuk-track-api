@@ -44,27 +44,24 @@ const uuid = z.string().uuid();
  *         application/json:
  *           schema:
  *             oneOf:
- *               - type: object
- *                 required: [lat, lng, recorded_at]
- *                 properties:
- *                   lat:         { type: number, format: float }
- *                   lng:         { type: number, format: float }
- *                   speed_kmh:   { type: number, nullable: true }
- *                   heading_deg: { type: number, nullable: true }
- *                   recorded_at: { type: string, format: date-time }
- *               - type: object
- *                 required: [pings]
- *                 properties:
- *                   pings:
- *                     type: array
- *                     minItems: 1
- *                     maxItems: 100
- *                     items: { type: object }
+ *               - $ref: '#/components/schemas/PingIngest'
+ *               - $ref: '#/components/schemas/PingBatch'
  *     responses:
- *       202: { description: Pings accepted (returns count) }
+ *       202:
+ *         description: Pings accepted
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     accepted:     { type: integer }
+ *                     last_seen_at: { type: string, format: date-time }
  *       401: { description: Device signature invalid or stale }
  *       409: { description: Nonce replay }
- *       422: { description: Body validation failed }
+ *       422: { $ref: '#/components/responses/ValidationError' }
  */
 export async function ingest(req, res, next) {
   try {
@@ -90,9 +87,23 @@ export async function ingest(req, res, next) {
  *         required: true
  *         schema: { type: string, format: uuid }
  *     responses:
- *       200: { description: Latest ping with stale/age annotations }
+ *       200:
+ *         description: Latest ping with stale/age annotations
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: object
+ *                   properties:
+ *                     vehicle:  { $ref: '#/components/schemas/Vehicle' }
+ *                     location:
+ *                       oneOf:
+ *                         - { $ref: '#/components/schemas/LocationPing' }
+ *                         - { type: 'null' }
  *       304: { description: Not modified }
- *       404: { description: Vehicle not found OR outside your scope }
+ *       404: { $ref: '#/components/responses/NotFound' }
  */
 export async function lastKnown(req, res, next) {
   try {
@@ -202,7 +213,18 @@ export async function history(req, res, next) {
  *         name: limit
  *         schema: { type: integer, default: 200, maximum: 500 }
  *     responses:
- *       200: { description: Page of latest-per-vehicle rows }
+ *       200:
+ *         description: Page of latest-per-vehicle rows
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 data:
+ *                   type: array
+ *                   items: { $ref: '#/components/schemas/FleetLocationRow' }
+ *                 meta:  { $ref: '#/components/schemas/PaginationMeta' }
+ *                 links: { $ref: '#/components/schemas/PaginationLinks' }
  */
 export async function opsList(req, res, next) {
   try {
