@@ -20,6 +20,7 @@ import {
 } from './modules/tracking/tracking.routes.js';
 import deviceAdminRoutes from './modules/devices/devices.routes.js';
 import userAdminRoutes from './modules/users/users.routes.js';
+import driverRoutes from './modules/drivers/drivers.routes.js';
 
 export function createApp() {
   const app = express();
@@ -88,6 +89,7 @@ export function createApp() {
   app.use('/api/v1/devices', trackingDeviceRouter);
   app.use('/api/v1/devices', deviceAdminRoutes);
   app.use('/api/v1/users', userAdminRoutes);
+  app.use('/api/v1/drivers', driverRoutes);
   app.use('/api/v1', userRouter);
 
   app.use(notFound);

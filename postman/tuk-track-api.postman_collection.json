@@ -488,6 +488,69 @@
       ]
     },
     {
+      "name": "🧑 Drivers",
+      "item": [
+        {
+          "name": "List drivers (deduped from vehicles)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/drivers?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "drivers"],
+              "query": [{ "key": "limit", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Search drivers (?q=)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/drivers?q=Perera&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "drivers"],
+              "query": [
+                { "key": "q", "value": "Perera" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Drivers in Western Province",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/drivers?province=WP&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "drivers"],
+              "query": [
+                { "key": "province", "value": "WP" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Driver detail by NIC (replace with one from list)",
+          "description": "Pick a NIC from the previous list response and substitute it in the URL. Returns the driver profile + every vehicle they own that you can see.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/drivers/<paste-nic-here>",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "drivers", "<paste-nic-here>"]
+            }
+          }
+        }
+      ]
+    },
+    {
       "name": "👥 Users (Admin)",
       "item": [
         {
