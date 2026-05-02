@@ -8,10 +8,29 @@ RESTful API for real-time three-wheeler (tuk-tuk) tracking and movement logging 
 
 ## Live deployment
 
-- **API base URL:** _<paste deployed URL after first deploy>_
-- **Swagger UI:** `<base>/docs`
-- **OpenAPI JSON:** `<base>/openapi.json`
-- **Health probe:** `<base>/health`
+- **API base URL:** <https://tuk-track-api.onrender.com>
+- **Swagger UI:** <https://tuk-track-api.onrender.com/docs>
+- **OpenAPI JSON:** <https://tuk-track-api.onrender.com/openapi.json>
+- **Health probe:** <https://tuk-track-api.onrender.com/health>
+
+> Hosted on Render's free tier, so the first request after ~15 minutes of
+> idle may take 30–60 seconds while the service spins back up.
+
+### Seeded demo credentials
+
+The deployed instance is seeded automatically on every build. All accounts
+share the password `Password123!`:
+
+| Email                          | Role                      |
+| ------------------------------ | ------------------------- |
+| `hq.admin@police.lk`           | hq                        |
+| `wp.admin@police.lk`           | province (Western)        |
+| `cp.admin@police.lk`           | province (Central)        |
+| `officer.colcentral@police.lk` | station (Colombo Central) |
+| `officer.colpettah@police.lk`  | station (Pettah)          |
+| `officer.gammain@police.lk`    | station (Gampaha)         |
+| `officer.kanmain@police.lk`    | station (Kandy)           |
+| `officer.galfort@police.lk`    | station (Galle Fort)      |
 
 ## Stack
 
