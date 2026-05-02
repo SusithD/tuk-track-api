@@ -1,0 +1,849 @@
+{
+  "info": {
+    "_postman_id": "tuk-track-api-collection",
+    "name": "Tuk-Tuk Tracking API",
+    "description": "RESTful API for Sri Lanka Police real-time three-wheeler tracking.\n\n**Base URL:** {{base_url}}\n**Swagger UI:** {{base_url}}/docs\n\n## Quick start\n\n1. Import this collection AND `tuk-track-api.postman_environment.json`\n2. Select the **Tuk-Tuk API (Production)** environment in the top-right dropdown\n3. Run **Auth → Login (HQ admin)** — this captures `{{access_token}}` automatically\n4. Run any other request — auth headers are populated from the environment\n\nFor the device-ingestion endpoints, run **Devices Admin → Provision Device** first; the pre-request script on `Tracking → Device Ingest` auto-signs each request using the captured `key_id` + `hmac_secret`.\n\n## Seeded credentials (deployed instance)\n\n| Email | Role | Password |\n| --- | --- | --- |\n| hq.admin@police.lk | hq | Password123! |\n| wp.admin@police.lk | province (WP) | Password123! |\n| officer.colcentral@police.lk | station (Colombo Central) | Password123! |",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "auth": {
+    "type": "bearer",
+    "bearer": [{ "key": "token", "value": "{{access_token}}", "type": "string" }]
+  },
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [""]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "🏥 Health",
+      "item": [
+        {
+          "name": "Health probe",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/health",
+              "host": ["{{base_url}}"],
+              "path": ["health"]
+            }
+          }
+        },
+        {
+          "name": "Root",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/",
+              "host": ["{{base_url}}"],
+              "path": [""]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🔐 Auth",
+      "item": [
+        {
+          "name": "Login (HQ admin) — START HERE",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('Login OK and token captured', () => {",
+                  "  pm.response.to.have.status(200);",
+                  "  const body = pm.response.json();",
+                  "  pm.expect(body.accessToken).to.be.a('string');",
+                  "  pm.environment.set('access_token', body.accessToken);",
+                  "  pm.environment.set('refresh_token', body.refreshToken);",
+                  "  pm.environment.set('user_id', body.user.id);",
+                  "  pm.environment.set('user_role', body.user.role);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"hq.admin@police.lk\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login (Province admin — Western)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.environment.set('access_token', body.accessToken);",
+                  "pm.environment.set('refresh_token', body.refreshToken);",
+                  "pm.environment.set('user_role', body.user.role);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"wp.admin@police.lk\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Login (Station officer — Colombo Central)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.environment.set('access_token', body.accessToken);",
+                  "pm.environment.set('refresh_token', body.refreshToken);",
+                  "pm.environment.set('user_role', body.user.role);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"officer.colcentral@police.lk\",\n  \"password\": \"Password123!\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/login",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "login"]
+            }
+          }
+        },
+        {
+          "name": "Refresh access token (rotates)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const body = pm.response.json();",
+                  "pm.environment.set('access_token', body.accessToken);",
+                  "pm.environment.set('refresh_token', body.refreshToken);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/refresh",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "refresh"]
+            }
+          }
+        },
+        {
+          "name": "Logout (revoke refresh token)",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"refreshToken\": \"{{refresh_token}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/logout",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "logout"]
+            }
+          }
+        },
+        {
+          "name": "Get current user (/me)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/auth/me",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "auth", "me"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📍 Master Data",
+      "item": [
+        {
+          "name": "List provinces",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('200 OK', () => pm.response.to.have.status(200));",
+                  "const wp = pm.response.json().data.find(p => p.code === 'WP');",
+                  "if (wp) pm.environment.set('province_id', wp.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/provinces",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "provinces"]
+            }
+          }
+        },
+        {
+          "name": "List districts (filtered by province=WP)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const col = pm.response.json().data.find(d => d.code === 'COL');",
+                  "if (col) pm.environment.set('district_id', col.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/districts?province=WP",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "districts"],
+              "query": [{ "key": "province", "value": "WP" }]
+            }
+          }
+        },
+        {
+          "name": "Get district by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/districts/{{district_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "districts", "{{district_id}}"]
+            }
+          }
+        },
+        {
+          "name": "List stations (filtered by district=COL)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const central = pm.response.json().data.find(s => s.code === 'COL-CENTRAL');",
+                  "if (central) pm.environment.set('station_id', central.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stations?district=COL",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stations"],
+              "query": [{ "key": "district", "value": "COL" }]
+            }
+          }
+        },
+        {
+          "name": "List stations (filtered by province=WP, JOIN demo)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stations?province=WP",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stations"],
+              "query": [{ "key": "province", "value": "WP" }]
+            }
+          }
+        },
+        {
+          "name": "Get station by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/stations/{{station_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "stations", "{{station_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Conditional GET demo (304 on If-None-Match)",
+          "description": "Hit `List provinces` first to capture an ETag, paste the value into the `If-None-Match` header below, then send. Should return 304 Not Modified.",
+          "request": {
+            "method": "GET",
+            "header": [
+              {
+                "key": "If-None-Match",
+                "value": "<paste ETag from previous response>",
+                "type": "text"
+              }
+            ],
+            "url": {
+              "raw": "{{base_url}}/api/v1/provinces",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "provinces"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🚙 Vehicles",
+      "item": [
+        {
+          "name": "List vehicles (basic, page 1)",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const v = pm.response.json().data[0];",
+                  "if (v) pm.environment.set('vehicle_id', v.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vehicles?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vehicles"],
+              "query": [{ "key": "limit", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "List vehicles (filter status + province)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vehicles?status=active&province=WP&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vehicles"],
+              "query": [
+                { "key": "status", "value": "active" },
+                { "key": "province", "value": "WP" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List vehicles (sort + sparse fields)",
+          "description": "Sort descending by created_at, return only id and plate_no. Demonstrates two L5 features in one request.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vehicles?sort=-created_at&fields=id,plate_no&limit=5",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vehicles"],
+              "query": [
+                { "key": "sort", "value": "-created_at" },
+                { "key": "fields", "value": "id,plate_no" },
+                { "key": "limit", "value": "5" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List vehicles (paginated, page 2)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vehicles?page=2&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vehicles"],
+              "query": [
+                { "key": "page", "value": "2" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "List vehicles (BAD sort — expects 400)",
+          "description": "Trying to sort by a non-allowlisted column. Defends against SQL injection via sort param.",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vehicles?sort=password_hash",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vehicles"],
+              "query": [{ "key": "sort", "value": "password_hash" }]
+            }
+          }
+        },
+        {
+          "name": "Get vehicle by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vehicles/{{vehicle_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vehicles", "{{vehicle_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Create vehicle (HQ + station scope)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"plate_no\": \"DEMO-1234\",\n  \"owner_name\": \"Postman Demo\",\n  \"owner_nic\": \"888888888V\",\n  \"owner_phone\": \"+94770000000\",\n  \"station_id\": \"{{station_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/vehicles",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vehicles"]
+            }
+          }
+        },
+        {
+          "name": "Update vehicle status (PATCH)",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"status\": \"impounded\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/vehicles/{{vehicle_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vehicles", "{{vehicle_id}}"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "👥 Users (Admin)",
+      "item": [
+        {
+          "name": "List users (HQ sees all)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users"]
+            }
+          }
+        },
+        {
+          "name": "Search users (?q=)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/users?q=officer",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users"],
+              "query": [{ "key": "q", "value": "officer" }]
+            }
+          }
+        },
+        {
+          "name": "Create HQ user",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"new.hq@police.lk\",\n  \"password\": \"long-enough-password\",\n  \"full_name\": \"New HQ Admin\",\n  \"role\": \"hq\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users"]
+            }
+          }
+        },
+        {
+          "name": "Create station officer",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"email\": \"new.officer@police.lk\",\n  \"password\": \"long-enough-password\",\n  \"full_name\": \"New Officer\",\n  \"role\": \"station\",\n  \"province_id\": \"{{province_id}}\",\n  \"station_id\": \"{{station_id}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/users",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "users"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "📡 Devices (Admin)",
+      "item": [
+        {
+          "name": "List devices",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const d = pm.response.json().data[0];",
+                  "if (d) pm.environment.set('device_id', d.id);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/devices?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "devices"],
+              "query": [{ "key": "limit", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Get device by id",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/devices/{{device_id}}",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "devices", "{{device_id}}"]
+            }
+          }
+        },
+        {
+          "name": "Provision NEW device — captures key_id + secret",
+          "description": "Provisions a fresh tracker on `vehicle_id`. The pre-request flow expects a vehicle in the env. The response contains `data.credentials.key_id` and `data.credentials.hmac_secret` — these are saved to the environment and used to sign device-side ping requests.\n\n**The plaintext secret is shown ONCE and cannot be recovered later.**",
+          "event": [
+            {
+              "listen": "test",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "pm.test('201 + credentials returned', () => {",
+                  "  pm.response.to.have.status(201);",
+                  "  const c = pm.response.json().data.credentials;",
+                  "  pm.expect(c.key_id).to.match(/^dev_/);",
+                  "  pm.expect(c.hmac_secret).to.be.a('string');",
+                  "  pm.environment.set('device_key_id', c.key_id);",
+                  "  pm.environment.set('device_hmac_secret', c.hmac_secret);",
+                  "  pm.environment.set('device_id', pm.response.json().data.device.id);",
+                  "});"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"vehicle_id\": \"{{vehicle_id}}\",\n  \"revoke_existing\": true\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/devices",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "devices"]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛰 Tracking (Reads)",
+      "item": [
+        {
+          "name": "Last-known location for a vehicle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vehicles/{{vehicle_id}}/location",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vehicles", "{{vehicle_id}}", "location"]
+            }
+          }
+        },
+        {
+          "name": "Vehicle history (last 7 days, page 1)",
+          "description": "Pulls historical pings within a window. Default is last 24 hours; max is 7 days. The pre-request script below builds a 7-day window dynamically.",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const to = new Date().toISOString();",
+                  "const from = new Date(Date.now() - 7*24*3600*1000 + 60_000).toISOString();",
+                  "pm.variables.set('history_from', from);",
+                  "pm.variables.set('history_to', to);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/vehicles/{{vehicle_id}}/history?from={{history_from}}&to={{history_to}}&limit=20",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "vehicles", "{{vehicle_id}}", "history"],
+              "query": [
+                { "key": "from", "value": "{{history_from}}" },
+                { "key": "to", "value": "{{history_to}}" },
+                { "key": "limit", "value": "20" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Live ops view — latest per vehicle",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/locations?limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "locations"],
+              "query": [{ "key": "limit", "value": "10" }]
+            }
+          }
+        },
+        {
+          "name": "Live ops view (filtered by province=WP)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/locations?province=WP&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "locations"],
+              "query": [
+                { "key": "province", "value": "WP" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        },
+        {
+          "name": "Live ops view (only stale > 24h)",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "{{base_url}}/api/v1/locations?status=stale&limit=10",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "locations"],
+              "query": [
+                { "key": "status", "value": "stale" },
+                { "key": "limit", "value": "10" }
+              ]
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "🛰 Tracking (Device Ingest — HMAC signed)",
+      "description": "Requests in this folder use a folder-level pre-request script that signs each request using HMAC-SHA256 with the device's key_id + hmac_secret captured from `Devices Admin → Provision NEW device`.\n\n**Workflow:**\n1. Run `Vehicles → List vehicles` to capture `{{vehicle_id}}`\n2. Run `Devices Admin → Provision NEW device` to capture `{{device_key_id}}` + `{{device_hmac_secret}}`\n3. Run any request in this folder — headers `x-key-id`, `x-timestamp`, `x-nonce`, `x-signature` are added automatically",
+      "auth": { "type": "noauth" },
+      "event": [
+        {
+          "listen": "prerequest",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "// HMAC-SHA256 request signing for tracking devices.",
+              "// Mirrors src/utils/hmac.js on the server.",
+              "const keyId  = pm.environment.get('device_key_id');",
+              "const secret = pm.environment.get('device_hmac_secret');",
+              "if (!keyId || !secret) {",
+              "  throw new Error('Run Devices Admin → Provision NEW device first to capture credentials.');",
+              "}",
+              "",
+              "const ts    = Math.floor(Date.now() / 1000);",
+              "const nonce = pm.variables.replaceIn('{{$randomUUID}}').replace(/-/g, '').slice(0, 16);",
+              "",
+              "const method = pm.request.method.toUpperCase();",
+              "// Resolve the URL path with variables substituted.",
+              "const fullUrl = pm.variables.replaceIn(pm.request.url.toString());",
+              "const path    = new URL(fullUrl).pathname;",
+              "",
+              "// Body must be the raw JSON, not Postman's structured form.",
+              "const body = pm.request.body && pm.request.body.raw ? pm.variables.replaceIn(pm.request.body.raw) : '';",
+              "",
+              "const bodyHash = CryptoJS.SHA256(body).toString(CryptoJS.enc.Hex);",
+              "const signingString = `${ts}\\n${nonce}\\n${method}\\n${path}\\n${bodyHash}`;",
+              "const signature     = CryptoJS.HmacSHA256(signingString, secret).toString(CryptoJS.enc.Hex);",
+              "",
+              "pm.request.headers.upsert({ key: 'x-key-id',    value: keyId });",
+              "pm.request.headers.upsert({ key: 'x-timestamp', value: String(ts) });",
+              "pm.request.headers.upsert({ key: 'x-nonce',     value: nonce });",
+              "pm.request.headers.upsert({ key: 'x-signature', value: signature });",
+              "console.log('Signed request:', { keyId, ts, nonce, signingString, signature });"
+            ]
+          }
+        }
+      ],
+      "item": [
+        {
+          "name": "Submit single ping",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "// Inject a fresh recorded_at = now into the body before signing.",
+                  "const recorded = new Date().toISOString();",
+                  "pm.variables.set('recorded_at', recorded);"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lat\": 6.9271,\n  \"lng\": 79.8612,\n  \"speed_kmh\": 25.5,\n  \"heading_deg\": 180,\n  \"recorded_at\": \"{{recorded_at}}\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/devices/pings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "devices", "pings"]
+            }
+          }
+        },
+        {
+          "name": "Submit batch (3 pings)",
+          "event": [
+            {
+              "listen": "prerequest",
+              "script": {
+                "type": "text/javascript",
+                "exec": [
+                  "const now = Date.now();",
+                  "pm.variables.set('rec_a', new Date(now - 120_000).toISOString());",
+                  "pm.variables.set('rec_b', new Date(now -  60_000).toISOString());",
+                  "pm.variables.set('rec_c', new Date(now).toISOString());"
+                ]
+              }
+            }
+          ],
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"pings\": [\n    { \"lat\": 6.9271, \"lng\": 79.8612, \"speed_kmh\":  0,   \"recorded_at\": \"{{rec_a}}\" },\n    { \"lat\": 6.9300, \"lng\": 79.8650, \"speed_kmh\": 18.4, \"recorded_at\": \"{{rec_b}}\" },\n    { \"lat\": 6.9320, \"lng\": 79.8680, \"speed_kmh\": 22.1, \"recorded_at\": \"{{rec_c}}\" }\n  ]\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/devices/pings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "devices", "pings"]
+            }
+          }
+        },
+        {
+          "name": "Submit ping with TAMPERED body (expects 401)",
+          "description": "Send the same request, but the pre-request script signs the original body and we then 'tamper' by editing the body in the request — should return 401 DEVICE_SIGNATURE_INVALID. Manually edit lat/lng below to demonstrate.",
+          "request": {
+            "auth": { "type": "noauth" },
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"lat\": 6.9271,\n  \"lng\": 79.8612,\n  \"recorded_at\": \"2026-05-02T11:30:00Z\"\n}"
+            },
+            "url": {
+              "raw": "{{base_url}}/api/v1/devices/pings",
+              "host": ["{{base_url}}"],
+              "path": ["api", "v1", "devices", "pings"]
+            }
+          }
+        }
+      ]
+    }
+  ]
+}

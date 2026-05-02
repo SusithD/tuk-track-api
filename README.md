@@ -130,6 +130,14 @@ the service and run:
 SEED_FORCE=1 yarn seed
 ```
 
+## Postman collection
+
+A ready-to-import Postman collection + environment lives under [postman/](postman/).
+It includes scripts that auto-capture JWTs after login, auto-capture device
+credentials after provisioning, and auto-sign HMAC requests for the device
+ingestion endpoints. See [postman/README.md](postman/README.md) for the
+demo-flow walk-through.
+
 ## Documentation
 
 The full project report (`/report`) covers business analysis, architecture, security model, and limitations.
