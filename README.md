@@ -60,17 +60,18 @@ Override with env vars: `SEED_VEHICLE_COUNT`, `SEED_HISTORY_DAYS`, `SEED_PING_IN
 
 ## Scripts
 
-| Command         | Purpose                                                                           |
-| --------------- | --------------------------------------------------------------------------------- |
-| `yarn dev`      | Start with auto-reload (nodemon)                                                  |
-| `yarn start`    | Start in production mode                                                          |
-| `yarn lint`     | ESLint check                                                                      |
-| `yarn lint:fix` | ESLint with autofix                                                               |
-| `yarn format`   | Prettier write                                                                    |
-| `yarn test`     | Run Jest test suite                                                               |
-| `yarn migrate`  | Apply DB migrations                                                               |
-| `yarn seed`     | Seed simulation data (provinces, districts, stations, vehicles, location history) |
-| `yarn db:reset` | Drop, migrate, seed                                                               |
+| Command           | Purpose                                                          |
+| ----------------- | ---------------------------------------------------------------- |
+| `yarn dev`        | Start with auto-reload (nodemon)                                 |
+| `yarn start`      | Start in production mode                                         |
+| `yarn lint`       | ESLint check                                                     |
+| `yarn lint:fix`   | ESLint with autofix                                              |
+| `yarn format`     | Prettier write                                                   |
+| `yarn test`       | Run Jest test suite                                              |
+| `yarn migrate`    | Apply DB migrations                                              |
+| `yarn seed`       | Seed simulation data — idempotent, skips if data already present |
+| `yarn seed:force` | Force-reseed (truncates everything, then re-inserts)             |
+| `yarn db:reset`   | Drop, migrate, force-seed                                        |
 
 ## Project layout
 
@@ -90,7 +91,25 @@ tests/            Jest + Supertest
 
 ## Deployment
 
-Deployed on Render via `render.yaml` blueprint. CI runs lint + tests on every push (see `.github/workflows/ci.yml`).
+Deployed on **Render** via the `render.yaml` blueprint:
+
+- Web service `tuk-track-api` (free plan, Singapore region)
+- Managed Postgres `tuk-track-db` (free plan, same region)
+- `JWT_SECRET` auto-generated; `DATABASE_URL` injected from the managed DB
+- `RENDER_EXTERNAL_URL` is read on boot to populate the Swagger server URL
+- Build command runs `yarn install --immutable && yarn migrate && yarn seed` —
+  migrate is idempotent via Knex's tracking table; seeders skip if rows already
+  exist (set `SEED_FORCE=1` to reset)
+- CI (GitHub Actions) runs lint + format-check + tests on every push to `main`
+
+### Re-seeding on the deployed instance
+
+If you ever need to wipe and re-seed the live DB, open Render's **Shell** for
+the service and run:
+
+```bash
+SEED_FORCE=1 yarn seed
+```
 
 ## Documentation
 

@@ -4,7 +4,7 @@ services:
     runtime: node
     plan: free
     region: singapore
-    buildCommand: corepack enable && yarn install --immutable && yarn migrate
+    buildCommand: corepack enable && yarn install --immutable && yarn migrate && yarn seed
     startCommand: yarn start
     healthCheckPath: /health
     autoDeploy: true
