@@ -1,5 +1,7 @@
 import bcrypt from 'bcryptjs';
 
+const FORCE = process.env.SEED_FORCE === '1';
+
 /**
  * User seeder.
  *
@@ -8,6 +10,13 @@ import bcrypt from 'bcryptjs';
  * documented in the README and report Limitations section.
  */
 export async function seed(knex) {
+  const existing = await knex('users').count({ c: 'id' }).first();
+  if (Number(existing.c) > 0 && !FORCE) {
+    // eslint-disable-next-line no-console
+    console.log('  ⊙ users already present, skipping');
+    return;
+  }
+
   const password_hash = await bcrypt.hash('Password123!', 10);
 
   const stations = await knex('stations').select('id', 'code', 'district_id');

@@ -12,6 +12,11 @@ const schema = z.object({
   RATE_LIMIT_WINDOW_MS: z.coerce.number().int().positive().default(60_000),
   RATE_LIMIT_MAX: z.coerce.number().int().positive().default(120),
   CORS_ORIGIN: z.string().default('*'),
+  // Public base URL (no trailing slash). Used in OpenAPI server list and
+  // anywhere we render absolute links. Render injects RENDER_EXTERNAL_URL
+  // automatically; otherwise PUBLIC_URL or the local fallback is used.
+  PUBLIC_URL: z.string().url().optional(),
+  RENDER_EXTERNAL_URL: z.string().url().optional(),
 });
 
 const parsed = schema.safeParse(process.env);
@@ -23,3 +28,7 @@ if (!parsed.success) {
 export const env = parsed.data;
 export const isProd = env.NODE_ENV === 'production';
 export const isTest = env.NODE_ENV === 'test';
+
+/** The canonical externally-reachable base URL for this instance. */
+export const publicUrl =
+  env.PUBLIC_URL || env.RENDER_EXTERNAL_URL || `http://localhost:${env.PORT}`;
