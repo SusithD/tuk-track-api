@@ -2,8 +2,8 @@
 
 RESTful API for real-time three-wheeler (tuk-tuk) tracking and movement logging — Sri Lanka Police law-enforcement platform.
 
-**Module:** NB6007CEM Web API Development — BSc (Hons) Computing (awarded by Coventry University), NIBM batch 24.2P
-**Student ID:** _<replace with your student ID>_
+**Module:** NB6007CEM Web API Development — BSc (Hons) Computing batch 24.2P
+**Student ID:** COBSCCOMP242P-072
 **Lecturer:** Niranga Dharmaratna
 
 ## Live deployment
