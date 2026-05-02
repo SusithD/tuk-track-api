@@ -170,6 +170,20 @@ export const swaggerSpec = swaggerJSDoc({
           },
         },
 
+        // ----- Devices (admin metadata) -----
+        Device: {
+          type: 'object',
+          properties: {
+            id: { type: 'string', format: 'uuid' },
+            vehicle_id: { type: 'string', format: 'uuid' },
+            key_id: { type: 'string', example: 'dev_a1b2c3d4e5f6' },
+            status: { type: 'string', enum: ['active', 'revoked'] },
+            last_seen_at: { type: 'string', format: 'date-time', nullable: true },
+            issued_at: { type: 'string', format: 'date-time' },
+            revoked_at: { type: 'string', format: 'date-time', nullable: true },
+          },
+        },
+
         // ----- Tracking -----
         LocationPing: {
           type: 'object',

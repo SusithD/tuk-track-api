@@ -14,7 +14,12 @@ import { swaggerSpec } from './docs/swagger.js';
 import authRoutes from './modules/auth/auth.routes.js';
 import masterRoutes from './modules/master/master.routes.js';
 import vehicleRoutes from './modules/vehicles/vehicles.routes.js';
-import { deviceRouter, userRouter } from './modules/tracking/tracking.routes.js';
+import {
+  deviceRouter as trackingDeviceRouter,
+  userRouter,
+} from './modules/tracking/tracking.routes.js';
+import deviceAdminRoutes from './modules/devices/devices.routes.js';
+import userAdminRoutes from './modules/users/users.routes.js';
 
 export function createApp() {
   const app = express();
@@ -77,7 +82,12 @@ export function createApp() {
   app.use('/api/v1/auth', authRoutes);
   app.use('/api/v1', masterRoutes);
   app.use('/api/v1/vehicles', vehicleRoutes);
-  app.use('/api/v1/devices', deviceRouter);
+  // /devices/pings (HMAC ingest) must be mounted BEFORE the admin router so
+  // its specific path is matched first; the admin router otherwise treats
+  // "pings" as a UUID parameter on /:id and returns 400.
+  app.use('/api/v1/devices', trackingDeviceRouter);
+  app.use('/api/v1/devices', deviceAdminRoutes);
+  app.use('/api/v1/users', userAdminRoutes);
   app.use('/api/v1', userRouter);
 
   app.use(notFound);
