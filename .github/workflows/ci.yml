@@ -10,6 +10,22 @@ jobs:
   quality:
     name: Lint, format & test
     runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+          POSTGRES_DB: tuktrack_test
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd pg_isready
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+
     steps:
       - uses: actions/checkout@v4
 
@@ -36,3 +52,5 @@ jobs:
         env:
           NODE_ENV: test
           JWT_SECRET: test-secret-only-for-ci-do-not-use-in-prod-32chars
+          # Override the local-default port (5433) — in CI, Postgres is on 5432.
+          TEST_DATABASE_URL: postgres://postgres:postgres@localhost:5432/tuktrack_test
