@@ -91,6 +91,23 @@ export async function makeVehicle({ station_id, ...overrides } = {}) {
   return row;
 }
 
+/** Inserts a single GPS ping for the given vehicle. */
+export async function makePing({ vehicle_id, recorded_at, lat = 6.9271, lng = 79.8612, ...rest }) {
+  const at = recorded_at ? new Date(recorded_at) : new Date();
+  const [row] = await db('locations')
+    .insert({
+      vehicle_id,
+      lat,
+      lng,
+      speed_kmh: rest.speed_kmh ?? 0,
+      heading_deg: rest.heading_deg ?? null,
+      recorded_at: at.toISOString(),
+      received_at: at.toISOString(),
+    })
+    .returning('*');
+  return row;
+}
+
 export async function makeVehicleWithDevice({ station_id } = {}) {
   if (!station_id) ({ station_id } = await makePlace());
 
