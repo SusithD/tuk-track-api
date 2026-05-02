@@ -92,6 +92,61 @@ Override with env vars: `SEED_VEHICLE_COUNT`, `SEED_HISTORY_DAYS`, `SEED_PING_IN
 | `yarn seed:force` | Force-reseed (truncates everything, then re-inserts)             |
 | `yarn db:reset`   | Drop, migrate, force-seed                                        |
 
+## Inspecting the local database
+
+`docker compose up -d` brings up two services:
+
+| Service     | Where                   | What it's for                                                          |
+| ----------- | ----------------------- | ---------------------------------------------------------------------- |
+| Postgres 16 | `localhost:5433`        | The actual DB — the API connects here                                  |
+| **pgweb**   | <http://localhost:8081> | Browser UI for browsing tables, running queries, viewing relationships |
+
+Three ways to look at the data:
+
+```bash
+# Quickest — drop into a psql shell
+yarn db:psql
+
+# Open the pgweb browser UI (http://localhost:8081)
+yarn db:web
+
+# Or connect any desktop client (TablePlus, DBeaver, Postico, DataGrip):
+#   host: localhost   port: 5433   database: tuktrack
+#   user: postgres    password: postgres
+```
+
+A few useful queries to start with:
+
+```sql
+-- counts across all tables
+SELECT 'provinces' AS tbl, count(*) FROM provinces UNION ALL
+SELECT 'districts', count(*) FROM districts UNION ALL
+SELECT 'stations',  count(*) FROM stations  UNION ALL
+SELECT 'users',     count(*) FROM users     UNION ALL
+SELECT 'vehicles',  count(*) FROM vehicles  UNION ALL
+SELECT 'devices',   count(*) FROM devices   UNION ALL
+SELECT 'locations', count(*) FROM locations;
+
+-- vehicles per station, with district + province context
+SELECT p.name AS province, d.name AS district, s.name AS station,
+       count(v.id) AS vehicles
+FROM stations s
+JOIN districts d ON d.id = s.district_id
+JOIN provinces p ON p.id = d.province_id
+LEFT JOIN vehicles v ON v.station_id = s.id
+GROUP BY p.name, d.name, s.name
+ORDER BY vehicles DESC;
+
+-- last-known location per active vehicle (Postgres DISTINCT ON)
+SELECT DISTINCT ON (l.vehicle_id)
+       v.plate_no, l.lat, l.lng, l.speed_kmh, l.recorded_at
+FROM locations l
+JOIN vehicles v ON v.id = l.vehicle_id
+WHERE v.status = 'active'
+ORDER BY l.vehicle_id, l.recorded_at DESC
+LIMIT 20;
+```
+
 ## Project layout
 
 ```

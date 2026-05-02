@@ -18,5 +18,19 @@ services:
       timeout: 5s
       retries: 10
 
+  # Browser UI for the local Postgres. Open http://localhost:8081 after
+  # `docker compose up -d`. Read-only credentials are baked in for convenience.
+  pgweb:
+    image: sosedoff/pgweb:latest
+    container_name: tuk-track-pgweb
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://postgres:postgres@postgres:5432/tuktrack?sslmode=disable
+    ports:
+      - '8081:8081'
+
 volumes:
   tuk_pgdata:

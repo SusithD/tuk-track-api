@@ -21,7 +21,9 @@
     "migrate:rollback": "knex migrate:rollback",
     "seed": "knex seed:run",
     "seed:force": "SEED_FORCE=1 knex seed:run",
-    "db:reset": "knex migrate:rollback --all && knex migrate:latest && SEED_FORCE=1 knex seed:run"
+    "db:reset": "knex migrate:rollback --all && knex migrate:latest && SEED_FORCE=1 knex seed:run",
+    "db:psql": "docker exec -it tuk-track-postgres psql -U postgres -d tuktrack",
+    "db:web": "open http://localhost:8081"
   },
   "dependencies": {
     "@faker-js/faker": "^10.4.0",
