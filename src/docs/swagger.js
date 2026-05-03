@@ -13,6 +13,7 @@ export const swaggerSpec = swaggerJSDoc({
       license: { name: 'Academic use only' },
     },
     servers: [{ url: publicUrl, description: isProd ? 'Production' : 'Local' }],
+    security: [{ bearerAuth: [] }],
     components: {
       securitySchemes: {
         bearerAuth: { type: 'http', scheme: 'bearer', bearerFormat: 'JWT' },

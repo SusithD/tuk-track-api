@@ -58,6 +58,7 @@ export function createApp() {
    *   get:
    *     tags: [Health]
    *     summary: Liveness probe
+   *     security: []
    *     responses:
    *       200:
    *         description: Service is up

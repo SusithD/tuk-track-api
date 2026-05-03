@@ -8,6 +8,7 @@ import * as authService from './auth.service.js';
  *   post:
  *     tags: [Auth]
  *     summary: Authenticate a user and issue an access + refresh token pair
+ *     security: []
  *     requestBody:
  *       required: true
  *       content:
@@ -50,6 +51,7 @@ export async function login(req, res, next) {
  *     tags: [Auth]
  *     summary: Exchange a refresh token for a new access + refresh pair
  *     description: Refresh tokens rotate on every use; the old token is revoked atomically. Reuse of a revoked token revokes the entire chain.
+ *     security: []
  *     requestBody:
  *       required: true
  *       content:
@@ -87,6 +89,7 @@ export async function refresh(req, res, next) {
  *   post:
  *     tags: [Auth]
  *     summary: Revoke a refresh token
+ *     security: []
  *     requestBody:
  *       required: true
  *       content:
