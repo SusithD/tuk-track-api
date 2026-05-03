@@ -16,6 +16,8 @@
     "format": "prettier --write \"**/*.{js,json,md,yml}\"",
     "format:check": "prettier --check \"**/*.{js,json,md,yml}\"",
     "test": "NODE_ENV=test JWT_SECRET=test-secret-only-for-ci-do-not-use-in-prod-32chars LOG_LEVEL=silent node --experimental-vm-modules node_modules/jest/bin/jest.js",
+    "test:unit": "NODE_ENV=test JWT_SECRET=test-secret-only-for-ci-do-not-use-in-prod-32chars LOG_LEVEL=silent node --experimental-vm-modules node_modules/jest/bin/jest.js --selectProjects unit",
+    "test:integration": "NODE_ENV=test JWT_SECRET=test-secret-only-for-ci-do-not-use-in-prod-32chars LOG_LEVEL=silent node --experimental-vm-modules node_modules/jest/bin/jest.js --selectProjects integration",
     "test:watch": "NODE_ENV=test JWT_SECRET=test-secret-only-for-ci-do-not-use-in-prod-32chars LOG_LEVEL=silent node --experimental-vm-modules node_modules/jest/bin/jest.js --watch",
     "migrate": "knex migrate:latest",
     "migrate:rollback": "knex migrate:rollback",
@@ -45,13 +47,26 @@
     "zod": "^3.24.1"
   },
   "jest": {
-    "testEnvironment": "node",
-    "globalSetup": "./tests/setup/global-setup.js",
-    "testMatch": [
-      "**/tests/**/*.test.js"
-    ],
     "maxWorkers": 1,
-    "transform": {}
+    "projects": [
+      {
+        "displayName": "unit",
+        "testEnvironment": "node",
+        "testMatch": [
+          "<rootDir>/tests/unit/**/*.test.js"
+        ],
+        "transform": {}
+      },
+      {
+        "displayName": "integration",
+        "testEnvironment": "node",
+        "globalSetup": "<rootDir>/tests/setup/global-setup.js",
+        "testMatch": [
+          "<rootDir>/tests/integration/**/*.test.js"
+        ],
+        "transform": {}
+      }
+    ]
   },
   "devDependencies": {
     "@eslint/js": "^9.18.0",
