@@ -7,8 +7,6 @@ const router = Router();
 
 router.use(requireUser, privateNoStore);
 
-// Provisioning is restricted to HQ + station officers (for their own station).
-// Province admins are read-only at the device layer too.
 router.post('/', requireRole('hq', 'station'), ctrl.provision);
 router.get('/', ctrl.list);
 router.get('/:id', ctrl.getById);

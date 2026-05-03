@@ -1,9 +1,3 @@
-/**
- * Real Sri Lankan administrative master data: 9 provinces, 25 districts,
- * plus a curated set of 25 police stations distributed across districts.
- * Centroid coordinates per district drive the simulated GPS ping geometry.
- */
-
 export const provinces = [
   { code: 'WP', name: 'Western Province' },
   { code: 'CP', name: 'Central Province' },
@@ -44,11 +38,6 @@ export const districts = [
   { code: 'KEG', name: 'Kegalle', province: 'SAB', lat: 7.2513, lng: 80.3464 },
 ];
 
-/**
- * Stations: a realistic sample of police stations across the country.
- * Coordinates are nudged slightly off the district centroid so each station
- * has its own "neighbourhood" for ping simulation.
- */
 export const stations = [
   {
     code: 'COL-CENTRAL',
@@ -131,7 +120,6 @@ export const stations = [
   { code: 'KEG-MAIN', name: 'Kegalle Police', district: 'KEG', latOffset: 0.0, lngOffset: 0.0 },
 ];
 
-/** Sri Lanka registration plate prefixes (newer 3-letter format). */
 export const platePrefixes = [
   'ABC',
   'ABF',

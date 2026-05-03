@@ -8,12 +8,6 @@ const VEHICLE_COUNT = Number(process.env.SEED_VEHICLE_COUNT || 200);
 const RNG_SEED = Number(process.env.SEED_RNG || 20260430);
 const FORCE = process.env.SEED_FORCE === '1';
 
-/**
- * Generates `VEHICLE_COUNT` vehicles distributed across all stations,
- * each with an active tracking device. Plate numbers and owner identities
- * are deterministically derived from RNG seed so re-seeding produces the
- * same fleet (useful for demos and viva consistency).
- */
 export async function seed(knex) {
   const existing = await knex('vehicles').count({ c: 'id' }).first();
   if (Number(existing.c) > 0 && !FORCE) {

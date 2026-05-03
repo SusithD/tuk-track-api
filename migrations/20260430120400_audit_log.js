@@ -1,7 +1,3 @@
-/**
- * Audit log: append-only record of privileged actions and reads.
- * Used for investigative integrity ("who looked up vehicle X and when").
- */
 export async function up(knex) {
   await knex.schema.createTable('audit_log', (t) => {
     t.bigIncrements('id').primary();

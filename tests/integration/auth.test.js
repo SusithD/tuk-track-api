@@ -98,7 +98,6 @@ describe('POST /api/v1/auth/refresh', () => {
       .send({ refreshToken: login.body.refreshToken });
     expect(first.status).toBe(200);
 
-    // Reusing the original (now revoked) token must fail and revoke the new one too.
     const reuse = await request(app)
       .post('/api/v1/auth/refresh')
       .send({ refreshToken: login.body.refreshToken });
@@ -135,13 +134,11 @@ describe('POST /api/v1/auth/logout', () => {
       .send({ refreshToken: login.body.refreshToken });
     expect(a.status).toBe(204);
 
-    // Idempotent — calling logout again does not error
     const b = await request(app)
       .post('/api/v1/auth/logout')
       .send({ refreshToken: login.body.refreshToken });
     expect(b.status).toBe(204);
 
-    // The refresh token should now be unusable
     const refresh = await request(app)
       .post('/api/v1/auth/refresh')
       .send({ refreshToken: login.body.refreshToken });

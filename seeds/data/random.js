@@ -1,4 +1,3 @@
-/** Tiny deterministic PRNG (mulberry32) so re-seeding produces identical data. */
 export function mulberry32(seed) {
   let a = seed >>> 0;
   return function () {

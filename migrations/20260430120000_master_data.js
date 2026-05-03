@@ -1,7 +1,3 @@
-/**
- * Administrative master data: provinces → districts → police stations.
- * These three form the geographic backbone for filtering and access control.
- */
 export async function up(knex) {
   await knex.schema.createTable('provinces', (t) => {
     t.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));

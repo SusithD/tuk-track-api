@@ -147,7 +147,6 @@ describe('GET /api/v1/vehicles — RBAC scoping', () => {
   });
 
   it('province admin sees all stations within their province', async () => {
-    // One province, two districts, three stations across them; one rogue province.
     const wp = await makePlace({
       provinceCode: 'XW2',
       districtCode: 'XCO2',

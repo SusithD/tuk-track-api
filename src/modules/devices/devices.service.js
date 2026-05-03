@@ -15,16 +15,6 @@ export const DEVICE_FIELDS = [
 ];
 export const SORTABLE = ['issued_at', 'last_seen_at', 'status'];
 
-/**
- * Provisions a new tracking device for an existing vehicle.
- *
- * Returns the raw secret exactly once (the operator copies it onto the
- * device firmware); the database stores only the bcrypt hash for the
- * legacy api_key column and the plaintext HMAC secret used at verify time.
- *
- * If the vehicle already has an active device, fail with 409 unless the
- * caller passed `revoke_existing: true`.
- */
 export async function provisionDevice(user, { vehicle_id, revoke_existing }) {
   const vehicle = await db('vehicles as v')
     .leftJoin('stations as s', 's.id', 'v.station_id')
@@ -68,8 +58,6 @@ export async function provisionDevice(user, { vehicle_id, revoke_existing }) {
 
     return {
       device: row,
-      // Plaintext credentials — surfaced exactly once. Operator must copy to
-      // the device immediately; we cannot recover them later.
       credentials: { key_id, hmac_secret },
     };
   });
@@ -78,7 +66,6 @@ export async function provisionDevice(user, { vehicle_id, revoke_existing }) {
 export async function listDevices({ user, filter = {}, sort = [], fields, page = 1, limit = 50 }) {
   const projection = (fields ?? DEVICE_FIELDS).map((c) => `devices.${c}`);
 
-  // Devices are scope-checked indirectly through their vehicle.
   const allowedVehicleIds = applyVehicleScope(db('vehicles').select('vehicles.id'), user);
 
   let base = db('devices').whereIn('devices.vehicle_id', allowedVehicleIds);

@@ -25,7 +25,6 @@ export const swaggerSpec = swaggerJSDoc({
         },
       },
       schemas: {
-        // ----- Standard envelopes -----
         Error: {
           type: 'object',
           required: ['error'],
@@ -62,7 +61,6 @@ export const swaggerSpec = swaggerJSDoc({
           },
         },
 
-        // ----- Master data -----
         Province: {
           type: 'object',
           properties: {
@@ -96,7 +94,6 @@ export const swaggerSpec = swaggerJSDoc({
           },
         },
 
-        // ----- Identity -----
         User: {
           type: 'object',
           properties: {
@@ -126,7 +123,6 @@ export const swaggerSpec = swaggerJSDoc({
           },
         },
 
-        // ----- Fleet -----
         Vehicle: {
           type: 'object',
           properties: {
@@ -170,7 +166,6 @@ export const swaggerSpec = swaggerJSDoc({
           },
         },
 
-        // ----- Drivers (virtual resource over vehicles) -----
         Driver: {
           type: 'object',
           properties: {
@@ -202,7 +197,6 @@ export const swaggerSpec = swaggerJSDoc({
           },
         },
 
-        // ----- Devices (admin metadata) -----
         Device: {
           type: 'object',
           properties: {
@@ -216,7 +210,6 @@ export const swaggerSpec = swaggerJSDoc({
           },
         },
 
-        // ----- Tracking -----
         LocationPing: {
           type: 'object',
           properties: {
@@ -274,7 +267,6 @@ export const swaggerSpec = swaggerJSDoc({
         },
       },
 
-      // Reusable response shells; saves repetition across endpoints.
       responses: {
         Unauthorized: {
           description: 'Bearer token missing, malformed, or expired',

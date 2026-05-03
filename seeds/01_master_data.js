@@ -2,13 +2,6 @@ import { provinces, districts, stations } from './data/sri-lanka.js';
 
 const FORCE = process.env.SEED_FORCE === '1';
 
-/**
- * Master data seeder.
- *
- * Default behaviour: skip silently if data already exists. This makes
- * `yarn seed` safe to run on every deploy. Set SEED_FORCE=1 to reset
- * the database (used in dev / when re-seeding a demo).
- */
 export async function seed(knex) {
   const existing = await knex('provinces').count({ c: 'id' }).first();
   if (Number(existing.c) > 0 && !FORCE) {

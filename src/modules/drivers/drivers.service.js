@@ -2,14 +2,6 @@ import createError from 'http-errors';
 import { db } from '../../config/database.js';
 import { applyVehicleScope } from '../../utils/scope.js';
 
-/**
- * Drivers are a virtual resource — there's no `drivers` table. The endpoint
- * runs SELECT DISTINCT against the embedded owner columns on the vehicles
- * table, scope-filtered by the caller's role.
- *
- * Vehicles missing owner_name OR owner_nic are excluded; the brief considers
- * a "registered tuk-tuk" to have a known operator.
- */
 export async function listDrivers({ user, filter = {}, page = 1, limit = 50 }) {
   let base = applyVehicleScope(db('vehicles as v'), user, { vehicleAlias: 'v' })
     .whereNotNull('v.owner_name')
@@ -42,7 +34,6 @@ export async function listDrivers({ user, filter = {}, page = 1, limit = 50 }) {
     .limit(limit)
     .offset((page - 1) * limit);
 
-  // Total = number of distinct (nic, name, phone) tuples in the scoped set.
   const distinctSub = base.clone().distinct('v.owner_nic', 'v.owner_name', 'v.owner_phone');
 
   const [rows, totalRow] = await Promise.all([
@@ -56,11 +47,6 @@ export async function listDrivers({ user, filter = {}, page = 1, limit = 50 }) {
   };
 }
 
-/**
- * Detailed view: a driver's profile + the list of vehicles they own that
- * are visible to the caller (scope-checked). 404 when no vehicles match;
- * we don't reveal whether the NIC exists outside the caller's scope.
- */
 export async function getDriverByNic(user, nic) {
   const vehicles = await applyVehicleScope(db('vehicles'), user)
     .where('vehicles.owner_nic', nic)
@@ -78,8 +64,6 @@ export async function getDriverByNic(user, nic) {
     throw createError(404, 'Driver not found', { code: 'NOT_FOUND' });
   }
 
-  // owner_name / owner_phone may differ across registrations (data drift);
-  // we report the most recently-registered values as canonical.
   const newest = [...vehicles].sort(
     (a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime(),
   )[0];

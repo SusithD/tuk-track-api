@@ -1,15 +1,6 @@
 import crypto from 'node:crypto';
 
-/**
- * Open-standards HMAC request authentication for tracking devices, modelled
- * on AWS SigV4 / RFC 9421 (HTTP Message Signatures). Signing string:
- *
- *   `${timestamp}\n${nonce}\n${method}\n${path}\n${sha256(body)}`
- *
- * Replay defence: timestamp must be inside ±SKEW_SECONDS, and the (key, nonce)
- * pair must not have been seen inside NONCE_TTL_MS.
- */
-export const SKEW_SECONDS = 300; // 5 minutes
+export const SKEW_SECONDS = 300;
 export const NONCE_TTL_MS = 10 * 60 * 1000;
 
 export function bodySha256Hex(rawBody) {
@@ -34,15 +25,9 @@ export function timingSafeEqualHex(a, b) {
 
 export function isFreshTimestamp(unixSeconds, nowMs = Date.now()) {
   if (!Number.isFinite(unixSeconds)) return false;
-  const deltaSec = Math.abs(nowMs / 1000 - unixSeconds);
-  return deltaSec <= SKEW_SECONDS;
+  return Math.abs(nowMs / 1000 - unixSeconds) <= SKEW_SECONDS;
 }
 
-/**
- * In-memory TTL-bounded set used as a nonce cache. Sufficient for a single
- * Node instance; behind a multi-instance deploy this should be Redis.
- * The Limitations section of the report flags this trade-off.
- */
 export class TtlSet {
   constructor(ttlMs = NONCE_TTL_MS) {
     this.ttlMs = ttlMs;

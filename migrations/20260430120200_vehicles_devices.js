@@ -1,12 +1,3 @@
-/**
- * Fleet:
- *  - vehicles: registered tuk-tuks (1 per plate number)
- *  - devices:  GPS trackers (1:1 with vehicle currently active)
- *
- * Device authentication uses a hashed API key (looked up via key_id prefix)
- * plus an HMAC secret used to sign each ping payload — defends against replay
- * and token leakage. We never store the raw API key, only its bcrypt hash.
- */
 export async function up(knex) {
   await knex.schema.createTable('vehicles', (t) => {
     t.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));

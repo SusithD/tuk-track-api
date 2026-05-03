@@ -9,7 +9,6 @@ export const listDriverQuerySchema = z.object({
   limit: z.coerce.number().int().positive().optional(),
 });
 
-// Sri Lankan NIC: legacy 9 digits + V/X, or modern 12 digits.
 const NIC_RE = /^([0-9]{9}[VvXx]|[0-9]{12})$/;
 export const nicParamSchema = z
   .string()

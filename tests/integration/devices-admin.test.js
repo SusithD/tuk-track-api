@@ -33,8 +33,6 @@ describe('POST /api/v1/devices — provisioning', () => {
     expect(res.body.data.credentials.hmac_secret.length).toBeGreaterThan(20);
     expect(res.headers['location']).toBe(`/api/v1/devices/${res.body.data.device.id}`);
 
-    // Persisted in DB; secret column is set, but the response is the only
-    // way to recover it (we never round-trip plaintext on subsequent reads).
     const persisted = await db('devices').where({ id: res.body.data.device.id }).first();
     expect(persisted.hmac_secret).toBe(res.body.data.credentials.hmac_secret);
   });

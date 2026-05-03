@@ -4,10 +4,6 @@ import { env } from '../config/env.js';
 
 const ISSUER = 'tuk-track-api';
 
-/**
- * Sign a short-lived access token. Carries identity + scope claims so the
- * RBAC middleware can authorize without an extra DB lookup on every request.
- */
 export function signAccessToken(user) {
   const payload = {
     sub: user.id,
@@ -26,12 +22,6 @@ export function verifyAccessToken(token) {
   return jwt.verify(token, env.JWT_SECRET, { issuer: ISSUER, algorithms: ['HS256'] });
 }
 
-/**
- * Refresh tokens are 256-bit random strings; we never sign them as JWTs.
- * The plaintext is returned to the client; only sha256(token) is stored.
- * This means we get O(1) lookup on revocation without any cryptographic
- * cost on every refresh call.
- */
 export function generateRefreshToken() {
   const raw = crypto.randomBytes(48).toString('base64url');
   const hash = crypto.createHash('sha256').update(raw).digest('hex');
@@ -42,10 +32,6 @@ export function hashRefreshToken(raw) {
   return crypto.createHash('sha256').update(raw).digest('hex');
 }
 
-/**
- * Parse JWT TTL strings (e.g. "15m", "7d") into milliseconds — used so the
- * refresh-token row's `expires_at` matches what the client should expect.
- */
 export function parseTtlMs(ttl) {
   const match = /^(\d+)([smhd])$/.exec(ttl);
   if (!match) throw new Error(`Invalid TTL: ${ttl}`);

@@ -191,7 +191,6 @@ describe('GET /api/v1/vehicles/:id/history', () => {
     await makePing({ vehicle_id: v.id, recorded_at: new Date(now - 3600_000), lat: 6.9 });
     await makePing({ vehicle_id: v.id, recorded_at: new Date(now - 1800_000), lat: 6.91 });
     await makePing({ vehicle_id: v.id, recorded_at: new Date(now - 600_000), lat: 6.92 });
-    // outside window - 2 days old
     await makePing({ vehicle_id: v.id, recorded_at: new Date(now - 48 * 3600_000), lat: 5.0 });
 
     const hq = await makeUser({ role: 'hq' });
@@ -279,7 +278,6 @@ describe('GET /api/v1/locations — cross-fleet ops view', () => {
   beforeEach(truncateAll);
 
   it('returns the latest ping per vehicle, scoped to caller', async () => {
-    // Setup: HQ sees both, station officer sees only their own.
     const place = await makePlace();
     const otherStation = await makeStationInDistrict(place.district_id);
 

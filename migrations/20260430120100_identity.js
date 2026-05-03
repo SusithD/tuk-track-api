@@ -1,11 +1,3 @@
-/**
- * Identity and access:
- *  - users: human operators (HQ, provincial, station-level)
- *  - refresh_tokens: server-side tracking for JWT refresh flow / revocation
- *
- * Devices (tuk-tuk trackers) are intentionally separate from users; they
- * authenticate with an API key + HMAC signature, not JWT.
- */
 export async function up(knex) {
   await knex.schema.createTable('users', (t) => {
     t.uuid('id').primary().defaultTo(knex.raw('gen_random_uuid()'));

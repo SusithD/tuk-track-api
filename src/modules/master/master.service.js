@@ -65,7 +65,6 @@ export async function getStationById(id) {
   return db('stations').where({ id }).first(STATION_COLS);
 }
 
-/** Returns the most recent updated_at across the supplied rows (or null). */
 export function maxUpdatedAt(rows) {
   let max = null;
   for (const r of rows) {

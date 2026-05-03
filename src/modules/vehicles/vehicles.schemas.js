@@ -1,6 +1,5 @@
 import { z } from 'zod';
 
-// Sri Lankan plate formats: legacy "WP-AB-1234" or modern "ABC-1234".
 const PLATE_RE = /^[A-Z]{2,3}-(?:[A-Z]{1,2}-)?[0-9]{4}$/;
 
 export const createVehicleSchema = z.object({

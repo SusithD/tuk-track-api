@@ -1,13 +1,3 @@
-/**
- * Location pings:
- *  - high-volume table; expect ~1 ping/min/vehicle in production
- *  - recorded_at is the device's wall-clock; received_at is server-side
- *  - composite index supports both "last known" (DESC limit 1) and
- *    "history within window" queries
- *
- * For coursework simplicity, lat/lng are stored as numeric. PostGIS could be
- * layered later for geo-fencing without changing the API contract.
- */
 export async function up(knex) {
   await knex.schema.createTable('locations', (t) => {
     t.bigIncrements('id').primary();

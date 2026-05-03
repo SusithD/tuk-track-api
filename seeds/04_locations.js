@@ -6,14 +6,6 @@ const PING_INTERVAL_MIN = Number(process.env.SEED_PING_INTERVAL_MIN || 10);
 const RNG_SEED = Number(process.env.SEED_RNG || 20260430);
 const FORCE = process.env.SEED_FORCE === '1';
 
-/**
- * Generates HISTORY_DAYS of GPS pings for every active device.
- *
- * Each vehicle "lives" near its registering station. Daytime (6am–10pm) it
- * drifts on a bounded random walk with non-zero speed; overnight it parks
- * at home. About 5% of vehicles are flagged "silent for 24h" to test the
- * stale-device alerting path.
- */
 export async function seed(knex) {
   const existing = await knex('locations').count({ c: 'id' }).first();
   if (Number(existing.c) > 0 && !FORCE) {
@@ -53,7 +45,7 @@ export async function seed(knex) {
   const intervalMs = PING_INTERVAL_MIN * 60 * 1000;
   const totalPingsPerVehicle = Math.floor((now - startMs) / intervalMs);
 
-  const silentCutoff = now - 24 * 60 * 60 * 1000; // last 24h
+  const silentCutoff = now - 24 * 60 * 60 * 1000;
   const batch = [];
   const BATCH_SIZE = 2000;
   let totalInserted = 0;
@@ -80,10 +72,8 @@ export async function seed(knex) {
       if (isDaytime) {
         speed = rng() < 0.7 ? floatBetween(rng, 8, 45) : 0;
         if (speed > 0) {
-          // ~0.001 deg ≈ 110 m — keep walks plausible for a tuk-tuk over 10 min
           curLat += floatBetween(rng, -0.004, 0.004);
           curLng += floatBetween(rng, -0.004, 0.004);
-          // soft pull back to home so they don't drift to the ocean
           curLat += (home.lat - curLat) * 0.05;
           curLng += (home.lng - curLng) * 0.05;
         }
@@ -115,7 +105,6 @@ export async function seed(knex) {
     await flush();
   }
 
-  // Update last_seen_at on devices to match the last ping we wrote
   const lastSeenRows = await knex('locations')
     .select('device_id')
     .max('received_at as last')

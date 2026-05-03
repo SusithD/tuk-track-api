@@ -27,7 +27,6 @@ export function createApp() {
 
   app.disable('x-powered-by');
   app.set('trust proxy', 1);
-  // Strong ETags so conditional GETs (If-None-Match) yield byte-accurate 304s.
   app.set('etag', 'strong');
 
   app.use(requestId);
@@ -37,8 +36,6 @@ export function createApp() {
   app.use(
     express.json({
       limit: '256kb',
-      // Capture the raw request body so HMAC verification (device auth)
-      // can hash exactly the bytes the client signed.
       verify: (req, _res, buf) => {
         req.rawBody = buf.toString('utf8');
       },
@@ -83,9 +80,6 @@ export function createApp() {
   app.use('/api/v1/auth', authRoutes);
   app.use('/api/v1', masterRoutes);
   app.use('/api/v1/vehicles', vehicleRoutes);
-  // /devices/pings (HMAC ingest) must be mounted BEFORE the admin router so
-  // its specific path is matched first; the admin router otherwise treats
-  // "pings" as a UUID parameter on /:id and returns 400.
   app.use('/api/v1/devices', trackingDeviceRouter);
   app.use('/api/v1/devices', deviceAdminRoutes);
   app.use('/api/v1/users', userAdminRoutes);

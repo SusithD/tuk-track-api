@@ -34,7 +34,6 @@ describe('GET /api/v1/drivers — list', () => {
       owner_nic: '222222222V',
       owner_phone: '+94770000002',
     });
-    // Alice's second tuk-tuk — same identity, should collapse to one driver row
     await makeVehicle({
       station_id: place.station_id,
       plate_no: 'ABC-0003',
@@ -63,7 +62,6 @@ describe('GET /api/v1/drivers — list', () => {
       owner_name: 'Charlie',
       owner_nic: '333333333V',
     });
-    // No NIC — must be excluded.
     await makeVehicle({
       station_id: place.station_id,
       plate_no: 'AAA-0002',

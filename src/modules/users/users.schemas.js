@@ -6,15 +6,6 @@ const baseUserBody = {
   full_name: z.string().min(2).max(120),
 };
 
-/**
- * Create-user payload with role-scope coupling enforced at the schema layer:
- *  - hq:        province_id and station_id must NOT be provided
- *  - province:  province_id is required, station_id must NOT be provided
- *  - station:   both province_id and station_id are required
- *
- * The DB has the same CHECK constraint, but rejecting at the API layer
- * gives nicer error messages and keeps the round-trip cost low.
- */
 export const createUserSchema = z
   .object({
     ...baseUserBody,

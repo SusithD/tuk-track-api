@@ -17,12 +17,10 @@ export const USER_FIELDS = [
 
 export const SORTABLE = ['email', 'full_name', 'role', 'created_at', 'last_login_at'];
 
-/** HQ-only: scope filter for the user list endpoint. */
 export function applyUserScope(qb, user) {
   if (!user) return qb;
   if (user.role === 'hq') return qb;
   if (user.role === 'province') return qb.where('users.province_id', user.province_id);
-  // station officers see only themselves; not really useful but consistent
   return qb.where('users.id', user.id);
 }
 

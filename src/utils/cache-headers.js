@@ -1,14 +1,8 @@
-/**
- * Sets Last-Modified from a Date and short-circuits with 304 if the client
- * sent a fresh If-Modified-Since. Returns true when 304 was sent so callers
- * can `return` early.
- */
 export function honorLastModified(req, res, lastModifiedDate) {
   if (!(lastModifiedDate instanceof Date) || Number.isNaN(lastModifiedDate.getTime())) {
     return false;
   }
 
-  // HTTP dates have second precision, so floor to seconds for comparison.
   const lastSec = Math.floor(lastModifiedDate.getTime() / 1000);
   res.setHeader('Last-Modified', new Date(lastSec * 1000).toUTCString());
 

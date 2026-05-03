@@ -7,8 +7,6 @@ const router = Router();
 
 router.use(requireUser, privateNoStore);
 
-// Listing is open to HQ + province (their province), but creation is HQ-only.
-// Station officers can already see themselves via /auth/me; no list access.
 router.get('/', requireRole('hq', 'province'), ctrl.list);
 router.post('/', requireRole('hq'), ctrl.create);
 

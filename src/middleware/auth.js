@@ -17,12 +17,6 @@ function extractBearer(req) {
   return token;
 }
 
-/**
- * Verifies the Bearer JWT and attaches a stable `req.user` object derived
- * from the token claims. We deliberately do NOT re-fetch the user on every
- * request — the access token is short-lived (15 min) and revocation is
- * handled by rotating refresh tokens.
- */
 export function requireUser(req, _res, next) {
   const token = extractBearer(req);
   if (!token) return next(createError(401, 'Bearer token required', { code: 'AUTH_REQUIRED' }));
@@ -42,10 +36,6 @@ export function requireUser(req, _res, next) {
   }
 }
 
-/**
- * Restrict to one or more roles. Order is unimportant — duplicates allowed,
- * since the rule is "must match at least one".
- */
 export function requireRole(...roles) {
   return (req, _res, next) => {
     if (!req.user) return next(createError(401, 'Not authenticated', { code: 'AUTH_REQUIRED' }));
@@ -60,17 +50,6 @@ export function requireRole(...roles) {
   };
 }
 
-/**
- * Tracking-device authentication via an HMAC-SHA256 signed request.
- *
- * Required headers:
- *   x-key-id      device key identifier
- *   x-timestamp   unix epoch seconds (within ±5min of server clock)
- *   x-nonce       unique-per-window string (replay defence)
- *   x-signature   hex(HMAC-SHA256(secret, "<ts>\n<nonce>\n<METHOD>\n<path>\n<sha256(body)>"))
- *
- * On success, attaches `req.device` and `req.vehicle`.
- */
 export async function requireDevice(req, _res, next) {
   try {
     const keyId = req.header('x-key-id');

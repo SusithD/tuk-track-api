@@ -22,7 +22,6 @@ const singlePing = z.object({
   }),
 });
 
-/** Accepts either a single ping body or `{ pings: [...] }` for batch upload. */
 export const pingPayloadSchema = z.union([
   singlePing,
   z.object({ pings: z.array(singlePing).min(1).max(100) }),

@@ -118,7 +118,6 @@ describe('requireDevice (HMAC)', () => {
       body: JSON.stringify(body),
     });
 
-    // Tamper with the body after signing.
     const res = await request(app)
       .post(PATH)
       .set(headers)

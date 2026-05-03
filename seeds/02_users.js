@@ -2,13 +2,6 @@ import bcrypt from 'bcryptjs';
 
 const FORCE = process.env.SEED_FORCE === '1';
 
-/**
- * User seeder.
- *
- * Provisions a small but representative cast of operators across all three
- * roles. All passwords are the same (Password123!) for ease of demo —
- * documented in the README and report Limitations section.
- */
 export async function seed(knex) {
   const existing = await knex('users').count({ c: 'id' }).first();
   if (Number(existing.c) > 0 && !FORCE) {

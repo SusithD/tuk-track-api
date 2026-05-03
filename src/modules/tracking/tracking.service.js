@@ -4,11 +4,6 @@ import { applyVehicleScope } from '../../utils/scope.js';
 
 const STALE_THRESHOLD_MS = 24 * 60 * 60 * 1000;
 
-/**
- * Persist one or more GPS pings from an authenticated tracking device.
- * Wraps insert + last_seen_at update in a single transaction so a failure
- * in either half rolls the whole thing back.
- */
 export async function ingestPings({ device, pings }) {
   const rows = pings.map((p) => ({
     vehicle_id: device.vehicle_id,
@@ -20,7 +15,6 @@ export async function ingestPings({ device, pings }) {
     recorded_at: new Date(p.recorded_at).toISOString(),
   }));
 
-  // Use a single received_at for the whole batch so all rows share an arrival.
   const lastSeenAt = new Date();
 
   await db.transaction(async (trx) => {
@@ -31,9 +25,7 @@ export async function ingestPings({ device, pings }) {
   return { accepted: rows.length, last_seen_at: lastSeenAt.toISOString() };
 }
 
-/** Fetches the most recent ping for a vehicle, or null if it has never reported. */
 export async function getLastKnownLocation(user, vehicleId) {
-  // Confirm scope first so we 404 (not leak) when the row exists but is out of reach.
   const vehicle = await applyVehicleScope(
     db('vehicles').where('vehicles.id', vehicleId),
     user,
@@ -54,12 +46,6 @@ export async function getLastKnownLocation(user, vehicleId) {
   };
 }
 
-/**
- * Fetch a vehicle's GPS history within the given window.
- *  - default window: last 24 hours
- *  - max window:     7 days (enforced by the schema)
- *  - returns `points` ordered by recorded_at ascending (good for polylines)
- */
 export async function getVehicleHistory(user, vehicleId, { from, to, page = 1, limit = 500 }) {
   const vehicle = await applyVehicleScope(
     db('vehicles').where('vehicles.id', vehicleId),
@@ -93,20 +79,10 @@ export async function getVehicleHistory(user, vehicleId, { from, to, page = 1, l
   };
 }
 
-/**
- * Cross-fleet "where is everyone right now" view.
- *
- * Uses Postgres DISTINCT ON to fetch the latest ping per vehicle in a single
- * pass, then joins back to vehicles + stations + districts so the response
- * carries enough context for an operations dashboard. Scope-aware (HQ ↔
- * province ↔ station) and filterable by province / district / station_id.
- */
 export async function listLatestLocations(user, filter, { page = 1, limit = 200 }) {
   const sinceFilter = filter.since ? new Date(filter.since) : null;
   const staleCutoff = new Date(Date.now() - STALE_THRESHOLD_MS);
 
-  // Sub-query: scoped vehicle ids the caller is allowed to see.
-  // Qualify the projection because joins introduce columns of the same name.
   let vehicleIdsQ = applyVehicleScope(db('vehicles').select('vehicles.id'), user);
   if (filter.station_id) vehicleIdsQ = vehicleIdsQ.where('vehicles.station_id', filter.station_id);
   if (filter.province || filter.district) {
@@ -121,8 +97,6 @@ export async function listLatestLocations(user, filter, { page = 1, limit = 200 
     }
   }
 
-  // Use DISTINCT ON for "latest per vehicle" — single index scan on the
-  // (vehicle_id, recorded_at) composite index defined in the migration.
   const dataQuery = db
     .select(
       'l.vehicle_id',
@@ -156,8 +130,6 @@ export async function listLatestLocations(user, filter, { page = 1, limit = 200 
   if (filter.status === 'fresh') filtered = annotated.filter((r) => !r.stale);
   else if (filter.status === 'stale') filtered = annotated.filter((r) => r.stale);
 
-  // DISTINCT ON queries don't compose neatly with COUNT(*), so we paginate
-  // in-memory. The scope filter ensures the result set is bounded.
   const total = filtered.length;
   const offset = (page - 1) * limit;
   const slice = filtered.slice(offset, offset + limit);

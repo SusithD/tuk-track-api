@@ -5,10 +5,7 @@ import * as ctrl from './master.controller.js';
 
 const router = Router();
 
-// Master data is administrative reference info. We require authentication
-// (the API isn't anonymously browsable), but allow shared caches and
-// long-ish max-age since it changes very rarely.
-const cacheable = publicCache(300); // 5 minutes
+const cacheable = publicCache(300);
 
 router.get('/provinces', requireUser, cacheable, ctrl.listProvinces);
 router.get('/provinces/:id', requireUser, cacheable, ctrl.getProvince);

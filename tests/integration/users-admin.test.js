@@ -160,7 +160,6 @@ describe('GET /api/v1/users', () => {
 
     const res = await request(app).get('/api/v1/users').set(auth(admin));
     expect(res.status).toBe(200);
-    // The admin themselves + the WP officer = 2; the CP officer is excluded
     expect(res.body.data.length).toBe(2);
     expect(res.body.data.every((u) => u.province_id === wp.province_id)).toBe(true);
   });

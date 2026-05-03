@@ -99,8 +99,6 @@ export async function list(req, res, next) {
       limit,
     });
 
-    // List endpoints honour Last-Modified by max(updated_at) — cheap conditional GET
-    // without recomputing the body.
     let last = null;
     for (const r of rows) {
       const t = r.updated_at;
@@ -147,7 +145,6 @@ export async function getById(req, res, next) {
   try {
     uuid.parse(req.params.id);
     const row = await svc.getVehicleById(req.user, req.params.id);
-    // 404 even when the row exists outside scope: don't leak existence.
     if (!row) throw createError(404, 'Vehicle not found', { code: 'NOT_FOUND' });
     if (honorLastModified(req, res, new Date(row.updated_at))) return;
     res.json({ data: row });

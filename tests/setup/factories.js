@@ -2,7 +2,6 @@ import crypto from 'node:crypto';
 import bcrypt from 'bcryptjs';
 import { db } from '../../src/config/database.js';
 
-/** Inserts a province + district + station and returns their ids. */
 export async function makePlace(overrides = {}) {
   const provinceCode =
     overrides.provinceCode || `P${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
@@ -57,7 +56,6 @@ export async function makeUser({ role = 'hq', password = 'Password123!', ...over
   return { ...user, password };
 }
 
-/** Inserts an extra district within an existing province. */
 export async function makeDistrictInProvince(province_id, overrides = {}) {
   const code = overrides.code || `D${crypto.randomBytes(2).toString('hex').toUpperCase()}`;
   const [row] = await db('districts')
@@ -66,7 +64,6 @@ export async function makeDistrictInProvince(province_id, overrides = {}) {
   return row;
 }
 
-/** Inserts an extra station within an existing district. */
 export async function makeStationInDistrict(district_id, overrides = {}) {
   const code = overrides.code || `S-${crypto.randomBytes(3).toString('hex').toUpperCase()}`;
   const [row] = await db('stations')
@@ -75,7 +72,6 @@ export async function makeStationInDistrict(district_id, overrides = {}) {
   return row;
 }
 
-/** Inserts a vehicle without a device. Useful for vehicle-CRUD tests. */
 export async function makeVehicle({ station_id, ...overrides } = {}) {
   if (!station_id) ({ station_id } = await makePlace());
   const [row] = await db('vehicles')
@@ -91,7 +87,6 @@ export async function makeVehicle({ station_id, ...overrides } = {}) {
   return row;
 }
 
-/** Inserts a single GPS ping for the given vehicle. */
 export async function makePing({ vehicle_id, recorded_at, lat = 6.9271, lng = 79.8612, ...rest }) {
   const at = recorded_at ? new Date(recorded_at) : new Date();
   const [row] = await db('locations')

@@ -21,11 +21,6 @@ const SAFE_USER_FIELDS = [
   'created_at',
 ];
 
-/**
- * Authenticate a user by email + password and issue a token pair.
- * Refresh tokens are stored only as their sha256 hash so a database leak
- * does not yield usable session credentials.
- */
 export async function loginUser({ email, password, userAgent, ip }) {
   const user = await db('users').whereRaw('lower(email) = lower(?)', [email]).first();
   if (!user) throw createError(401, 'Invalid credentials', { code: 'INVALID_CREDENTIALS' });
@@ -47,7 +42,6 @@ export async function rotateRefreshToken({ rawToken, userAgent, ip }) {
   const row = await db('refresh_tokens').where({ token_hash }).first();
   if (!row) throw createError(401, 'Refresh token invalid', { code: 'REFRESH_INVALID' });
   if (row.revoked_at) {
-    // Reuse of a revoked token is suspicious; revoke the entire chain.
     await db('refresh_tokens').where({ user_id: row.user_id }).update({ revoked_at: db.fn.now() });
     throw createError(401, 'Refresh token reuse detected', { code: 'REFRESH_REUSED' });
   }

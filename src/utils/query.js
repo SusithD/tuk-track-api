@@ -3,10 +3,6 @@ import createError from 'http-errors';
 const DEFAULT_LIMIT = 50;
 const MAX_LIMIT = 200;
 
-/**
- * Parses `?page` and `?limit` (or RFC-style `?page[number]`/`?page[size]`)
- * into safe integers with defaults clamped to MAX_LIMIT.
- */
 export function parsePagination(
   query,
   { defaultLimit = DEFAULT_LIMIT, maxLimit = MAX_LIMIT } = {},
@@ -20,11 +16,6 @@ export function parsePagination(
   return { page, limit, offset };
 }
 
-/**
- * Parses `?sort=foo,-bar` into ordered [{column,direction}] entries, but
- * only allows columns explicitly listed in `allowed`. Reject everything
- * else — sort injection is a real bug class.
- */
 export function parseSort(sortParam, allowed) {
   if (!sortParam) return [];
   const allowSet = new Set(allowed);
@@ -43,10 +34,6 @@ export function parseSort(sortParam, allowed) {
   });
 }
 
-/**
- * Parses `?fields=a,b,c` into a Set of requested columns. Returns null
- * when the param is absent so callers can keep the default projection.
- */
 export function parseFields(fieldsParam, allowed) {
   if (!fieldsParam) return null;
   const allowSet = new Set(allowed);
@@ -61,9 +48,6 @@ export function parseFields(fieldsParam, allowed) {
   return requested.length === 0 ? null : requested;
 }
 
-/**
- * JSON:API-flavoured collection envelope. `links` follow RFC 8288 conventions.
- */
 export function paginated(req, rows, { page, limit, total, basePath } = {}) {
   const totalPages = Math.max(1, Math.ceil(total / limit));
   const path = basePath || req.originalUrl.split('?')[0];
@@ -87,7 +71,6 @@ export function paginated(req, rows, { page, limit, total, basePath } = {}) {
   };
 }
 
-/** Sets RFC 8288 Link headers in addition to the body links — handy for non-JSON clients. */
 export function setLinkHeader(res, links) {
   const parts = [];
   for (const [rel, url] of Object.entries(links)) {

@@ -1,10 +1,6 @@
 import crypto from 'node:crypto';
 import { bodySha256Hex, buildSigningString, computeSignature } from '../../src/utils/hmac.js';
 
-/**
- * Build the four x-* headers a tracking device must send. Used by tests and
- * also documented in the README so a CLI demo (curl) can reproduce them.
- */
 export function signDeviceRequest({
   keyId,
   hmacSecret,

@@ -10,13 +10,8 @@ router.use(requireUser, privateNoStore);
 
 router.get('/', ctrl.list);
 router.get('/:id', ctrl.getById);
-
-// Creation and updates are restricted: HQ + station officers only.
-// Province admins are intentionally read-only — they oversee, not register.
 router.post('/', requireRole('hq', 'station'), ctrl.create);
 router.patch('/:id', requireRole('hq', 'station'), ctrl.update);
-
-// Mount /vehicles/:id/location and /vehicles/:id/history from the tracking module.
 router.use('/', vehicleSubRoutes);
 
 export default router;
