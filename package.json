@@ -50,6 +50,7 @@
     "testMatch": [
       "**/tests/**/*.test.js"
     ],
+    "maxWorkers": 1,
     "transform": {}
   },
   "devDependencies": {
