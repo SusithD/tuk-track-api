@@ -18,7 +18,7 @@ const uuid = z.string().uuid();
  *       (max 100 per request). Pings are persisted atomically with the
  *       device's last_seen_at update.
  *     security:
- *       - deviceKey: []
+ *       - deviceHmac: []
  *     parameters:
  *       - in: header
  *         name: x-key-id
